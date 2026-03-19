@@ -1,0 +1,8 @@
+{
+    "notebook.codeActionsOnSave": {
+        "source.organizeImports.biome": "explicit",
+        "source.fixAll.biome": "explicit"
+    },
+    "biome.configurationPath": "backend/biomr.json",
+    "biome.lsp.bin": "backend/node_modules/@biomejs/cli-linux-x64/biome"
+}
