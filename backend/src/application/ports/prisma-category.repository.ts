@@ -44,6 +44,25 @@ export class PrismaCategoryRepository {
 		};
 	}
 
+	async findByIdAndUserId(
+		id: string,
+		userId: string,
+	): Promise<CategoryModel | null> {
+		const category = await prisma.category.findFirst({
+			where: { id, userId },
+		});
+
+		if (!category) return null;
+
+		return {
+			id: category.id,
+			name: category.name,
+			userId: category.userId,
+			createdAt: category.createdAt,
+			updatedAt: category.updatedAt,
+		};
+	}
+
 	async findManyByUserId(userId: string): Promise<CategoryModel[]> {
 		const categories = await prisma.category.findMany({
 			where: { userId },

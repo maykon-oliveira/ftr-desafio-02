@@ -39,6 +39,9 @@ export class TransactionModel {
 	@Field(() => String)
 	userId!: string;
 
+	@Field(() => String, { nullable: true })
+	categoryId?: string;
+
 	@Field(() => GraphQLISODateTime)
 	createdAt!: Date;
 

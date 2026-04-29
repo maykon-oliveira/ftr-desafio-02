@@ -104,9 +104,11 @@ beforeAll(async () => {
 	const getUserByIdUseCase = new GetUserByIdUseCase(userRepository);
 	const createTransactionUseCase = new CreateTransactionUseCase(
 		transactionRepository,
+		categoryRepository,
 	);
 	const updateTransactionUseCase = new UpdateTransactionUseCase(
 		transactionRepository,
+		categoryRepository,
 	);
 	const deleteTransactionUseCase = new DeleteTransactionUseCase(
 		transactionRepository,
@@ -697,5 +699,101 @@ describe("GraphQL API e2e", () => {
 
 		expect(deleted.errors).toBeUndefined();
 		expect(deleted.data?.deleteTransaction.success).toBe(true);
+	});
+
+	it("should create transaction with category when category belongs to user", async () => {
+		const { token } = await registerUser();
+
+		const createdCategory = await graphqlRequest<{
+			createCategory: { category: { id: string } };
+		}>(
+			`mutation CreateCategory($data: CreateCategoryInput!) {
+				createCategory(data: $data) {
+					category {
+						id
+					}
+				}
+			}`,
+			{ data: { name: "Food" } },
+			token,
+		);
+
+		expect(createdCategory.errors).toBeUndefined();
+		const categoryId = createdCategory.data?.createCategory.category.id;
+
+		const createdTransaction = await graphqlRequest<{
+			createTransaction: { transaction: { id: string; categoryId?: string } };
+		}>(
+			`mutation Create($data: CreateTransactionInput!) {
+				createTransaction(data: $data) {
+					transaction {
+						id
+						categoryId
+					}
+				}
+			}`,
+			{
+				data: {
+					title: "Lunch",
+					amount: 42.5,
+					type: "EXPENSE",
+					categoryId,
+				},
+			},
+			token,
+		);
+
+		expect(createdTransaction.errors).toBeUndefined();
+		expect(
+			createdTransaction.data?.createTransaction.transaction.categoryId,
+		).toBe(categoryId);
+	});
+
+	it("should reject creating transaction with category from another user", async () => {
+		const firstUser = await registerUser();
+		const secondUser = await registerUser();
+
+		const createdCategory = await graphqlRequest<{
+			createCategory: { category: { id: string } };
+		}>(
+			`mutation CreateCategory($data: CreateCategoryInput!) {
+				createCategory(data: $data) {
+					category {
+						id
+					}
+				}
+			}`,
+			{ data: { name: "Private" } },
+			firstUser.token,
+		);
+
+		expect(createdCategory.errors).toBeUndefined();
+		const categoryId = createdCategory.data?.createCategory.category.id;
+
+		const createdTransaction = await graphqlRequest<{
+			createTransaction: { transaction: { id: string } };
+		}>(
+			`mutation Create($data: CreateTransactionInput!) {
+				createTransaction(data: $data) {
+					transaction {
+						id
+					}
+				}
+			}`,
+			{
+				data: {
+					title: "Lunch",
+					amount: 42.5,
+					type: "EXPENSE",
+					categoryId,
+				},
+			},
+			secondUser.token,
+		);
+
+		expect(createdTransaction.data?.createTransaction).toBeUndefined();
+		expect(createdTransaction.errors?.[0]?.message).toInclude(
+			"Category not found",
+		);
 	});
 });

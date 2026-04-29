@@ -6,5 +6,6 @@ export interface CreateTransactionUseCaseInput {
 	type: TransactionType;
 	description?: string;
 	occurredAt?: Date;
+	categoryId?: string;
 	userId: string;
 }

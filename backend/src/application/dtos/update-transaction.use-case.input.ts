@@ -8,4 +8,5 @@ export interface UpdateTransactionUseCaseInput {
 	type?: TransactionType;
 	description?: string;
 	occurredAt?: Date;
+	categoryId?: string;
 }

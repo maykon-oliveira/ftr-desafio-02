@@ -20,4 +20,7 @@ export class UpdateTransactionInput
 
 	@Field(() => GraphQLISODateTime, { nullable: true })
 	occurredAt?: Date;
+
+	@Field(() => String, { nullable: true })
+	categoryId?: string;
 }

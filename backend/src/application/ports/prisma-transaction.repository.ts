@@ -19,6 +19,7 @@ export class PrismaTransactionRepository {
 				type: input.type,
 				description: input.description,
 				occurredAt: input.occurredAt,
+				categoryId: input.categoryId,
 				userId: input.userId,
 			},
 		});
@@ -31,6 +32,7 @@ export class PrismaTransactionRepository {
 			description: transaction.description ?? undefined,
 			occurredAt: transaction.occurredAt,
 			userId: transaction.userId,
+			categoryId: transaction.categoryId ?? undefined,
 			createdAt: transaction.createdAt,
 			updatedAt: transaction.updatedAt,
 		};
@@ -54,6 +56,7 @@ export class PrismaTransactionRepository {
 			description: transaction.description ?? undefined,
 			occurredAt: transaction.occurredAt,
 			userId: transaction.userId,
+			categoryId: transaction.categoryId ?? undefined,
 			createdAt: transaction.createdAt,
 			updatedAt: transaction.updatedAt,
 		}));
@@ -94,6 +97,7 @@ export class PrismaTransactionRepository {
 				type: input.type,
 				description: input.description,
 				occurredAt: input.occurredAt,
+				categoryId: input.categoryId,
 			},
 		});
 
@@ -105,6 +109,7 @@ export class PrismaTransactionRepository {
 			description: transaction.description ?? undefined,
 			occurredAt: transaction.occurredAt,
 			userId: transaction.userId,
+			categoryId: transaction.categoryId ?? undefined,
 			createdAt: transaction.createdAt,
 			updatedAt: transaction.updatedAt,
 		};
