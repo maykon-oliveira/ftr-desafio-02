@@ -3,6 +3,22 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type CategoryModel {
+	createdAt: DateTimeISO!
+	id: ID!
+	name: String!
+	updatedAt: DateTimeISO!
+	userId: String!
+}
+
+input CreateCategoryInput {
+	name: String!
+}
+
+type CreateCategoryOutput {
+	category: CategoryModel!
+}
+
 input CreateTransactionInput {
 	amount: Float!
 	description: String
@@ -40,6 +56,7 @@ type LoginUserOutput {
 }
 
 type Mutation {
+	createCategory(data: CreateCategoryInput!): CreateCategoryOutput!
 	createTransaction(data: CreateTransactionInput!): CreateTransactionOutput!
 	deleteTransaction(id: String!): DeleteTransactionOutput!
 	login(data: LoginUserInput!): LoginUserOutput!
