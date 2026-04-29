@@ -42,4 +42,19 @@ export class PrismaCategoryRepository {
 			updatedAt: category.updatedAt,
 		};
 	}
+
+	async findManyByUserId(userId: string): Promise<CategoryModel[]> {
+		const categories = await prisma.category.findMany({
+			where: { userId },
+			orderBy: { name: "asc" },
+		});
+
+		return categories.map((category) => ({
+			id: category.id,
+			name: category.name,
+			userId: category.userId,
+			createdAt: category.createdAt,
+			updatedAt: category.updatedAt,
+		}));
+	}
 }
