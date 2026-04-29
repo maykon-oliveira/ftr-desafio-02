@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { ApolloServer } from "@apollo/server";
 import express from "express";
+import type { Server as HttpServer } from "node:http";
 import { buildSchema } from "type-graphql";
 import { expressMiddleware } from "@as-integrations/express5";
 import { AuthResolver } from "./infra/graphql/resolvers/auth.resolver";
@@ -12,7 +13,7 @@ import {
 	type GraphqlContext,
 } from "./infra/graphql/context";
 
-async function main() {
+export const createApp = async () => {
 	const app = express();
 
 	const schema = await buildSchema({
@@ -36,12 +37,35 @@ async function main() {
 		}),
 	);
 
-	app.listen(4000, () => {
-		console.log("Server is running on http://localhost:4000/graphql");
+	return {
+		app,
+		server,
+	};
+};
+
+export const startServer = async (
+	port = 4000,
+): Promise<{
+	app: express.Express;
+	server: ApolloServer<GraphqlContext>;
+	httpServer: HttpServer;
+}> => {
+	const { app, server } = await createApp();
+
+	const httpServer = app.listen(port, () => {
+		console.log(`Server is running on http://localhost:${port}/graphql`);
+	});
+
+	return {
+		app,
+		server,
+		httpServer,
+	};
+};
+
+if (import.meta.main) {
+	startServer().catch((error) => {
+		console.error(error);
+		process.exit(1);
 	});
 }
-
-main().catch((error) => {
-	console.error(error);
-	process.exit(1);
-});

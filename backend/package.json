@@ -7,12 +7,15 @@
 		"dev": "bun --watch src/index.ts",
 		"seed": "bun prisma/seed.ts",
 		"migrate": "bun prisma migrate dev",
-		"generate": "bun prisma generate"
+		"generate": "bun prisma generate",
+		"test": "bun test",
+		"test:unit": "bun test tests/unit",
+		"test:e2e": "bun test tests/e2e"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.7",
 		"@types/bcryptjs": "^3.0.0",
-		"@types/bun": "^1.3.10",
+		"@types/bun": "^1.3.13",
 		"@types/express": "^5.0.6",
 		"@types/jsonwebtoken": "^9.0.10",
 		"@types/node": "^25.5.0",
