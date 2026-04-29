@@ -30,6 +30,29 @@ export class PrismaTransactionRepository {
 		};
 	}
 
+	async findManyByUserId(userId: string): Promise<TransactionModel[]> {
+		const transactions = await prisma.transaction.findMany({
+			where: {
+				userId,
+			},
+			orderBy: {
+				occurredAt: "desc",
+			},
+		});
+
+		return transactions.map((transaction) => ({
+			id: transaction.id,
+			title: transaction.title,
+			amount: transaction.amount,
+			type: transaction.type as TransactionType,
+			description: transaction.description ?? undefined,
+			occurredAt: transaction.occurredAt,
+			userId: transaction.userId,
+			createdAt: transaction.createdAt,
+			updatedAt: transaction.updatedAt,
+		}));
+	}
+
 	async deleteByIdAndUserId(id: string, userId: string): Promise<boolean> {
 		const result = await prisma.transaction.deleteMany({
 			where: {
