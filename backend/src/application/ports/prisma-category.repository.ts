@@ -1,5 +1,6 @@
 import { Service } from "typedi";
 import type { CreateCategoryUseCaseInput } from "~/application/dtos/create-category.use-case.input";
+import type { UpdateCategoryUseCaseInput } from "~/application/dtos/update-category.use-case.input";
 import type { CategoryModel } from "~/domain/category.model";
 import { prisma } from "~/infra/db/prisma";
 
@@ -56,5 +57,30 @@ export class PrismaCategoryRepository {
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
 		}));
+	}
+
+	async updateByIdAndUserId(
+		input: UpdateCategoryUseCaseInput,
+	): Promise<CategoryModel | null> {
+		const existing = await prisma.category.findFirst({
+			where: { id: input.id, userId: input.userId },
+		});
+
+		if (!existing) return null;
+
+		const category = await prisma.category.update({
+			where: { id: input.id },
+			data: {
+				...(input.name !== undefined && { name: input.name }),
+			},
+		});
+
+		return {
+			id: category.id,
+			name: category.name,
+			userId: category.userId,
+			createdAt: category.createdAt,
+			updatedAt: category.updatedAt,
+		};
 	}
 }
