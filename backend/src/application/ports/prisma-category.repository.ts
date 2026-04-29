@@ -83,4 +83,15 @@ export class PrismaCategoryRepository {
 			updatedAt: category.updatedAt,
 		};
 	}
+
+	async deleteByIdAndUserId(id: string, userId: string): Promise<boolean> {
+		const result = await prisma.category.deleteMany({
+			where: {
+				id,
+				userId,
+			},
+		});
+
+		return result.count > 0;
+	}
 }

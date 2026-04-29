@@ -6,6 +6,7 @@ import { prisma } from "~/infra/db/prisma";
 import { Container } from "typedi";
 import { PrismaUserRepository } from "~/application/ports/prisma-user.repository";
 import { PrismaTransactionRepository } from "~/application/ports/prisma-transaction.repository";
+import { PrismaCategoryRepository } from "~/application/ports/prisma-category.repository";
 import { BcryptPasswordHasher } from "~/application/ports/bcrypt-password-hasher";
 import { RegisterUserUseCase } from "~/application/use-cases/register-user/register-user.use-case";
 import { LoginUserUseCase } from "~/application/use-cases/login-user/login-user.use-case";
@@ -14,9 +15,14 @@ import { CreateTransactionUseCase } from "~/application/use-cases/create-transac
 import { UpdateTransactionUseCase } from "~/application/use-cases/update-transaction/update-transaction.use-case";
 import { DeleteTransactionUseCase } from "~/application/use-cases/delete-transaction/delete-transaction.use-case";
 import { ListTransactionsUseCase } from "~/application/use-cases/list-transactions/list-transactions.use-case";
+import { CreateCategoryUseCase } from "~/application/use-cases/create-category/create-category.use-case";
+import { ListCategoriesUseCase } from "~/application/use-cases/list-categories/list-categories.use-case";
+import { UpdateCategoryUseCase } from "~/application/use-cases/update-category/update-category.use-case";
+import { DeleteCategoryUseCase } from "~/application/use-cases/delete-category/delete-category.use-case";
 import { AuthResolver } from "~/infra/graphql/resolvers/auth.resolver";
 import { UserResolver } from "~/infra/graphql/resolvers/user.resolver";
 import { TransactionResolver } from "~/infra/graphql/resolvers/transaction.resolver";
+import { CategoryResolver } from "~/infra/graphql/resolvers/category.resolver";
 
 Bun.env.JWT_SECRET = Bun.env.JWT_SECRET ?? "test-secret";
 Bun.env.DATABASE_URL = Bun.env.DATABASE_URL ?? "file:./dev.db";
@@ -87,6 +93,7 @@ beforeAll(async () => {
 
 	const userRepository = new PrismaUserRepository();
 	const transactionRepository = new PrismaTransactionRepository();
+	const categoryRepository = new PrismaCategoryRepository();
 	const passwordHasher = new BcryptPasswordHasher();
 
 	const registerUserUseCase = new RegisterUserUseCase(
@@ -107,9 +114,14 @@ beforeAll(async () => {
 	const listTransactionsUseCase = new ListTransactionsUseCase(
 		transactionRepository,
 	);
+	const createCategoryUseCase = new CreateCategoryUseCase(categoryRepository);
+	const listCategoriesUseCase = new ListCategoriesUseCase(categoryRepository);
+	const updateCategoryUseCase = new UpdateCategoryUseCase(categoryRepository);
+	const deleteCategoryUseCase = new DeleteCategoryUseCase(categoryRepository);
 
 	Container.set(PrismaUserRepository, userRepository);
 	Container.set(PrismaTransactionRepository, transactionRepository);
+	Container.set(PrismaCategoryRepository, categoryRepository);
 	Container.set(BcryptPasswordHasher, passwordHasher);
 	Container.set(RegisterUserUseCase, registerUserUseCase);
 	Container.set(LoginUserUseCase, loginUserUseCase);
@@ -118,6 +130,10 @@ beforeAll(async () => {
 	Container.set(UpdateTransactionUseCase, updateTransactionUseCase);
 	Container.set(DeleteTransactionUseCase, deleteTransactionUseCase);
 	Container.set(ListTransactionsUseCase, listTransactionsUseCase);
+	Container.set(CreateCategoryUseCase, createCategoryUseCase);
+	Container.set(ListCategoriesUseCase, listCategoriesUseCase);
+	Container.set(UpdateCategoryUseCase, updateCategoryUseCase);
+	Container.set(DeleteCategoryUseCase, deleteCategoryUseCase);
 	Container.set(
 		AuthResolver,
 		new AuthResolver(registerUserUseCase, loginUserUseCase),
@@ -130,6 +146,15 @@ beforeAll(async () => {
 			deleteTransactionUseCase,
 			listTransactionsUseCase,
 			updateTransactionUseCase,
+		),
+	);
+	Container.set(
+		CategoryResolver,
+		new CategoryResolver(
+			createCategoryUseCase,
+			deleteCategoryUseCase,
+			listCategoriesUseCase,
+			updateCategoryUseCase,
 		),
 	);
 
@@ -318,6 +343,250 @@ describe("User e2e", () => {
 		const result = await graphqlRequest(`query { getUser(id: "any") { id } }`);
 
 		expect(result.errors?.[0]?.message).toBe("Not authenticated");
+	});
+});
+
+describe("Category e2e", () => {
+	it("should reject unauthenticated deleteCategory", async () => {
+		const result = await graphqlRequest(
+			`mutation DeleteCategory($id: String!) {
+				deleteCategory(id: $id) {
+					success
+				}
+			}`,
+			{ id: "any-id" },
+		);
+
+		expect(result.errors?.[0]?.message).toBe("Not authenticated");
+	});
+
+	it("should create and delete category successfully", async () => {
+		const { token } = await registerUser();
+
+		const created = await graphqlRequest<{
+			createCategory: { category: { id: string; name: string } };
+		}>(
+			`mutation CreateCategory($data: CreateCategoryInput!) {
+				createCategory(data: $data) {
+					category {
+						id
+						name
+					}
+				}
+			}`,
+			{ data: { name: "Food" } },
+			token,
+		);
+
+		expect(created.errors).toBeUndefined();
+		const categoryId = created.data?.createCategory.category.id;
+		expect(typeof categoryId).toBe("string");
+
+		const deleted = await graphqlRequest<{
+			deleteCategory: { success: boolean };
+		}>(
+			`mutation DeleteCategory($id: String!) {
+				deleteCategory(id: $id) {
+					success
+				}
+			}`,
+			{ id: categoryId },
+			token,
+		);
+
+		expect(deleted.errors).toBeUndefined();
+		expect(deleted.data?.deleteCategory.success).toBe(true);
+
+		const listed = await graphqlRequest<{
+			listCategories: { categories: Array<{ id: string; name: string }> };
+		}>(
+			`query {
+				listCategories {
+					categories {
+						id
+						name
+					}
+				}
+			}`,
+			undefined,
+			token,
+		);
+
+		expect(listed.errors).toBeUndefined();
+		expect(listed.data?.listCategories.categories).toHaveLength(0);
+	});
+
+	it("should reject deleting category from another user", async () => {
+		const firstUser = await registerUser();
+		const secondUser = await registerUser();
+
+		const created = await graphqlRequest<{
+			createCategory: { category: { id: string } };
+		}>(
+			`mutation CreateCategory($data: CreateCategoryInput!) {
+				createCategory(data: $data) {
+					category {
+						id
+					}
+				}
+			}`,
+			{ data: { name: "Investments" } },
+			firstUser.token,
+		);
+
+		expect(created.errors).toBeUndefined();
+		const categoryId = created.data?.createCategory.category.id;
+
+		const deleted = await graphqlRequest<{
+			deleteCategory: { success: boolean };
+		}>(
+			`mutation DeleteCategory($id: String!) {
+				deleteCategory(id: $id) {
+					success
+				}
+			}`,
+			{ id: categoryId },
+			secondUser.token,
+		);
+
+		expect(deleted.data?.deleteCategory).toBeUndefined();
+		expect(deleted.errors?.[0]?.message).toInclude("Category not found");
+	});
+
+	it("should list only categories from authenticated user", async () => {
+		const firstUser = await registerUser();
+		const secondUser = await registerUser();
+
+		const firstCreated = await graphqlRequest(
+			`mutation CreateCategory($data: CreateCategoryInput!) {
+				createCategory(data: $data) {
+					category {
+						id
+						name
+					}
+				}
+			}`,
+			{ data: { name: "Food" } },
+			firstUser.token,
+		);
+
+		const secondCreated = await graphqlRequest(
+			`mutation CreateCategory($data: CreateCategoryInput!) {
+				createCategory(data: $data) {
+					category {
+						id
+						name
+					}
+				}
+			}`,
+			{ data: { name: "Travel" } },
+			secondUser.token,
+		);
+
+		expect(firstCreated.errors).toBeUndefined();
+		expect(secondCreated.errors).toBeUndefined();
+
+		const listed = await graphqlRequest<{
+			listCategories: { categories: Array<{ id: string; name: string }> };
+		}>(
+			`query {
+				listCategories {
+					categories {
+						id
+						name
+					}
+				}
+			}`,
+			undefined,
+			firstUser.token,
+		);
+
+		expect(listed.errors).toBeUndefined();
+		expect(listed.data?.listCategories.categories).toHaveLength(1);
+		expect(listed.data?.listCategories.categories[0]?.name).toBe("Food");
+	});
+
+	it("should update category successfully", async () => {
+		const { token } = await registerUser();
+
+		const created = await graphqlRequest<{
+			createCategory: { category: { id: string; name: string } };
+		}>(
+			`mutation CreateCategory($data: CreateCategoryInput!) {
+				createCategory(data: $data) {
+					category {
+						id
+						name
+					}
+				}
+			}`,
+			{ data: { name: "Subscriptions" } },
+			token,
+		);
+
+		expect(created.errors).toBeUndefined();
+		const categoryId = created.data?.createCategory.category.id;
+
+		const updated = await graphqlRequest<{
+			updateCategory: { category: { id: string; name: string } };
+		}>(
+			`mutation UpdateCategory($id: String!, $data: UpdateCategoryInput!) {
+				updateCategory(id: $id, data: $data) {
+					category {
+						id
+						name
+					}
+				}
+			}`,
+			{ id: categoryId, data: { name: "Monthly Subscriptions" } },
+			token,
+		);
+
+		expect(updated.errors).toBeUndefined();
+		expect(updated.data?.updateCategory.category.id).toBe(categoryId);
+		expect(updated.data?.updateCategory.category.name).toBe(
+			"Monthly Subscriptions",
+		);
+	});
+
+	it("should reject updating category from another user", async () => {
+		const firstUser = await registerUser();
+		const secondUser = await registerUser();
+
+		const created = await graphqlRequest<{
+			createCategory: { category: { id: string } };
+		}>(
+			`mutation CreateCategory($data: CreateCategoryInput!) {
+				createCategory(data: $data) {
+					category {
+						id
+					}
+				}
+			}`,
+			{ data: { name: "Education" } },
+			firstUser.token,
+		);
+
+		expect(created.errors).toBeUndefined();
+		const categoryId = created.data?.createCategory.category.id;
+
+		const updated = await graphqlRequest<{
+			updateCategory: { category: { id: string; name: string } };
+		}>(
+			`mutation UpdateCategory($id: String!, $data: UpdateCategoryInput!) {
+				updateCategory(id: $id, data: $data) {
+					category {
+						id
+						name
+					}
+				}
+			}`,
+			{ id: categoryId, data: { name: "Courses" } },
+			secondUser.token,
+		);
+
+		expect(updated.data?.updateCategory).toBeUndefined();
+		expect(updated.errors?.[0]?.message).toInclude("Category not found");
 	});
 });
 

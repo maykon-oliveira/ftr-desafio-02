@@ -8,6 +8,7 @@ import {
 } from "type-graphql";
 import { Service } from "typedi";
 import { CreateCategoryUseCase } from "~/application/use-cases/create-category/create-category.use-case";
+import { DeleteCategoryUseCase } from "~/application/use-cases/delete-category/delete-category.use-case";
 import { ListCategoriesUseCase } from "~/application/use-cases/list-categories/list-categories.use-case";
 import { UpdateCategoryUseCase } from "~/application/use-cases/update-category/update-category.use-case";
 import type { GraphqlContext } from "../context";
@@ -15,6 +16,7 @@ import { isAuth } from "../middleware/auth.middleware";
 import { CreateCategoryInput } from "../inputs/create-category.input";
 import { UpdateCategoryInput } from "../inputs/update-category.input";
 import { CreateCategoryOutput } from "../outputs/create-category.output";
+import { DeleteCategoryOutput } from "../outputs/delete-category.output";
 import { ListCategoriesOutput } from "../outputs/list-categories.output";
 import { UpdateCategoryOutput } from "../outputs/update-category.output";
 
@@ -23,6 +25,7 @@ import { UpdateCategoryOutput } from "../outputs/update-category.output";
 export class CategoryResolver {
 	constructor(
 		private readonly createCategoryUseCase: CreateCategoryUseCase,
+		private readonly deleteCategoryUseCase: DeleteCategoryUseCase,
 		private readonly listCategoriesUseCase: ListCategoriesUseCase,
 		private readonly updateCategoryUseCase: UpdateCategoryUseCase,
 	) {}
@@ -56,6 +59,18 @@ export class CategoryResolver {
 	): Promise<UpdateCategoryOutput> {
 		return this.updateCategoryUseCase.execute({
 			...input,
+			id,
+			userId: context.user!,
+		});
+	}
+
+	@Mutation(() => DeleteCategoryOutput)
+	@UseMiddleware(isAuth)
+	async deleteCategory(
+		@Arg("id", () => String) id: string,
+		@Ctx() context: GraphqlContext,
+	): Promise<DeleteCategoryOutput> {
+		return this.deleteCategoryUseCase.execute({
 			id,
 			userId: context.user!,
 		});
