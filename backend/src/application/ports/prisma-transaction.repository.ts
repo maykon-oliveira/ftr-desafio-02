@@ -29,4 +29,15 @@ export class PrismaTransactionRepository {
 			updatedAt: transaction.updatedAt,
 		};
 	}
+
+	async deleteByIdAndUserId(id: string, userId: string): Promise<boolean> {
+		const result = await prisma.transaction.deleteMany({
+			where: {
+				id,
+				userId,
+			},
+		});
+
+		return result.count > 0;
+	}
 }

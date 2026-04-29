@@ -20,6 +20,10 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
+type DeleteTransactionOutput {
+  success: Boolean!
+}
+
 input LoginUserInput {
   email: String!
   password: String!
@@ -33,6 +37,7 @@ type LoginUserOutput {
 
 type Mutation {
   createTransaction(data: CreateTransactionInput!): CreateTransactionOutput!
+  deleteTransaction(id: String!): DeleteTransactionOutput!
   login(data: LoginUserInput!): LoginUserOutput!
   registerUser(data: RegisterUserInput!): RegisterUserOutput!
 }
