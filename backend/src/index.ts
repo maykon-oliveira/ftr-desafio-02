@@ -5,6 +5,7 @@ import { buildSchema } from "type-graphql";
 import { expressMiddleware } from "@as-integrations/express5";
 import { AuthResolver } from "./infra/graphql/resolvers/auth.resolver";
 import { UserResolver } from "./infra/graphql/resolvers/user.resolver";
+import { TransactionResolver } from "./infra/graphql/resolvers/transaction.resolver";
 import { Container } from "typedi";
 import {
 	createGraphqlContext,
@@ -15,7 +16,7 @@ async function main() {
 	const app = express();
 
 	const schema = await buildSchema({
-		resolvers: [AuthResolver, UserResolver],
+		resolvers: [AuthResolver, UserResolver, TransactionResolver],
 		validate: false,
 		emitSchemaFile: "./src/infra/schema/schema.graphql",
 		container: Container,
