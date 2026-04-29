@@ -44,6 +44,7 @@ type Mutation {
   deleteTransaction(id: String!): DeleteTransactionOutput!
   login(data: LoginUserInput!): LoginUserOutput!
   registerUser(data: RegisterUserInput!): RegisterUserOutput!
+  updateTransaction(data: UpdateTransactionInput!, id: String!): UpdateTransactionOutput!
 }
 
 type Query {
@@ -78,6 +79,18 @@ type TransactionModel {
 enum TransactionType {
   EXPENSE
   INCOME
+}
+
+input UpdateTransactionInput {
+  amount: Float
+  description: String
+  occurredAt: DateTimeISO
+  title: String
+  type: TransactionType
+}
+
+type UpdateTransactionOutput {
+  transaction: TransactionModel!
 }
 
 type UserModel {

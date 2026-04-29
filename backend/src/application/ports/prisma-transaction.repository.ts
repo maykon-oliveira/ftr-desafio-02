@@ -1,4 +1,5 @@
 import type { CreateTransactionUseCaseInput } from "~/application/dtos/create-transaction.use-case.input";
+import type { UpdateTransactionUseCaseInput } from "~/application/dtos/update-transaction.use-case.input";
 import type { TransactionModel, TransactionType } from "~/domain/transaction.model";
 import { prisma } from "~/infra/db/prisma";
 import { Service } from "typedi";
@@ -62,5 +63,45 @@ export class PrismaTransactionRepository {
 		});
 
 		return result.count > 0;
+	}
+
+	async updateByIdAndUserId(
+		input: UpdateTransactionUseCaseInput,
+	): Promise<TransactionModel | null> {
+		const existingTransaction = await prisma.transaction.findFirst({
+			where: {
+				id: input.id,
+				userId: input.userId,
+			},
+		});
+
+		if (!existingTransaction) {
+			return null;
+		}
+
+		const transaction = await prisma.transaction.update({
+			where: {
+				id: input.id,
+			},
+			data: {
+				title: input.title,
+				amount: input.amount,
+				type: input.type,
+				description: input.description,
+				occurredAt: input.occurredAt,
+			},
+		});
+
+		return {
+			id: transaction.id,
+			title: transaction.title,
+			amount: transaction.amount,
+			type: transaction.type as TransactionType,
+			description: transaction.description ?? undefined,
+			occurredAt: transaction.occurredAt,
+			userId: transaction.userId,
+			createdAt: transaction.createdAt,
+			updatedAt: transaction.updatedAt,
+		};
 	}
 }
