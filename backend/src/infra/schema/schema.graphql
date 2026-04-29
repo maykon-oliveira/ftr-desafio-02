@@ -4,15 +4,15 @@
 # -----------------------------------------------
 
 input CreateTransactionInput {
-  amount: Float!
-  description: String
-  occurredAt: DateTimeISO
-  title: String!
-  type: TransactionType!
+	amount: Float!
+	description: String
+	occurredAt: DateTimeISO
+	title: String!
+	type: TransactionType!
 }
 
 type CreateTransactionOutput {
-  transaction: TransactionModel!
+	transaction: TransactionModel!
 }
 
 """
@@ -21,83 +21,86 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 scalar DateTimeISO
 
 type DeleteTransactionOutput {
-  success: Boolean!
+	success: Boolean!
 }
 
 type ListTransactionsOutput {
-  transactions: [TransactionModel!]!
+	transactions: [TransactionModel!]!
 }
 
 input LoginUserInput {
-  email: String!
-  password: String!
+	email: String!
+	password: String!
 }
 
 type LoginUserOutput {
-  refreshToken: String!
-  token: String!
-  user: UserModel!
+	refreshToken: String!
+	token: String!
+	user: UserModel!
 }
 
 type Mutation {
-  createTransaction(data: CreateTransactionInput!): CreateTransactionOutput!
-  deleteTransaction(id: String!): DeleteTransactionOutput!
-  login(data: LoginUserInput!): LoginUserOutput!
-  registerUser(data: RegisterUserInput!): RegisterUserOutput!
-  updateTransaction(data: UpdateTransactionInput!, id: String!): UpdateTransactionOutput!
+	createTransaction(data: CreateTransactionInput!): CreateTransactionOutput!
+	deleteTransaction(id: String!): DeleteTransactionOutput!
+	login(data: LoginUserInput!): LoginUserOutput!
+	registerUser(data: RegisterUserInput!): RegisterUserOutput!
+	updateTransaction(
+		data: UpdateTransactionInput!
+		id: String!
+	): UpdateTransactionOutput!
 }
 
 type Query {
-  getUser(id: String!): UserModel!
-  listTransactions: ListTransactionsOutput!
+	getUser(id: String!): UserModel!
+	listTransactions: ListTransactionsOutput!
 }
 
 input RegisterUserInput {
-  email: String!
-  name: String!
-  password: String!
+	email: String!
+	name: String!
+	password: String!
 }
 
 type RegisterUserOutput {
-  refreshToken: String!
-  token: String!
-  user: UserModel!
+	refreshToken: String!
+	token: String!
+	user: UserModel!
 }
 
 type TransactionModel {
-  amount: Float!
-  createdAt: DateTimeISO!
-  description: String
-  id: ID!
-  occurredAt: DateTimeISO!
-  title: String!
-  type: TransactionType!
-  updatedAt: DateTimeISO!
-  userId: String!
+	amount: Float!
+	createdAt: DateTimeISO!
+	description: String
+	id: ID!
+	occurredAt: DateTimeISO!
+	title: String!
+	type: TransactionType!
+	updatedAt: DateTimeISO!
+	userId: String!
 }
 
 enum TransactionType {
-  EXPENSE
-  INCOME
+	EXPENSE
+	INCOME
 }
 
 input UpdateTransactionInput {
-  amount: Float
-  description: String
-  occurredAt: DateTimeISO
-  title: String
-  type: TransactionType
+	amount: Float
+	description: String
+	occurredAt: DateTimeISO
+	title: String
+	type: TransactionType
 }
 
 type UpdateTransactionOutput {
-  transaction: TransactionModel!
+	transaction: TransactionModel!
 }
 
 type UserModel {
-  createdAt: DateTimeISO!
-  email: String!
-  id: ID!
-  name: String!
-  password: String!
-  updatedAt: DateTimeISO!
+	createdAt: DateTimeISO!
+	email: String!
+	id: ID!
+	name: String!
+	password: String!
+	updatedAt: DateTimeISO!
 }

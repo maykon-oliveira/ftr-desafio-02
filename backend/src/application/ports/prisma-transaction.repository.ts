@@ -1,12 +1,17 @@
 import type { CreateTransactionUseCaseInput } from "~/application/dtos/create-transaction.use-case.input";
 import type { UpdateTransactionUseCaseInput } from "~/application/dtos/update-transaction.use-case.input";
-import type { TransactionModel, TransactionType } from "~/domain/transaction.model";
+import type {
+	TransactionModel,
+	TransactionType,
+} from "~/domain/transaction.model";
 import { prisma } from "~/infra/db/prisma";
 import { Service } from "typedi";
 
 @Service()
 export class PrismaTransactionRepository {
-	async create(input: CreateTransactionUseCaseInput): Promise<TransactionModel> {
+	async create(
+		input: CreateTransactionUseCaseInput,
+	): Promise<TransactionModel> {
 		const transaction = await prisma.transaction.create({
 			data: {
 				title: input.title,

@@ -7,13 +7,11 @@ import { isAuth } from "../middleware/auth.middleware";
 @Service()
 @Resolver(() => UserModel)
 export class UserResolver {
-  constructor(private readonly getUserByIdUseCase: GetUserByIdUseCase) {}
+	constructor(private readonly getUserByIdUseCase: GetUserByIdUseCase) {}
 
-  @Query(() => UserModel)
-  @UseMiddleware(isAuth)
-  async getUser(
-    @Arg("id", () => String) id: string,
-  ): Promise<UserModel> {
-    return this.getUserByIdUseCase.execute(id);
-  }
+	@Query(() => UserModel)
+	@UseMiddleware(isAuth)
+	async getUser(@Arg("id", () => String) id: string): Promise<UserModel> {
+		return this.getUserByIdUseCase.execute(id);
+	}
 }

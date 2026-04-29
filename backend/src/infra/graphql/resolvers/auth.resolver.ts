@@ -10,22 +10,22 @@ import { RegisterUserUseCase } from "~/application/use-cases/register-user/regis
 @Service()
 @Resolver()
 export class AuthResolver {
-  constructor(
-    private readonly registerUserUseCase: RegisterUserUseCase,
-    private readonly loginUserUseCase: LoginUserUseCase,
-  ) {}
+	constructor(
+		private readonly registerUserUseCase: RegisterUserUseCase,
+		private readonly loginUserUseCase: LoginUserUseCase,
+	) {}
 
-  @Mutation(() => RegisterUserOutput)
-  async registerUser(
-    @Arg("data", () => RegisterUserInput) input: RegisterUserInput,
-  ): Promise<RegisterUserOutput> {    
-    return this.registerUserUseCase.execute(input);
-  }
+	@Mutation(() => RegisterUserOutput)
+	async registerUser(
+		@Arg("data", () => RegisterUserInput) input: RegisterUserInput,
+	): Promise<RegisterUserOutput> {
+		return this.registerUserUseCase.execute(input);
+	}
 
-  @Mutation(() => LoginUserOutput)
-  async login(
-    @Arg("data", () => LoginUserInput) input: LoginUserInput,
-  ): Promise<LoginUserOutput> {
-    return this.loginUserUseCase.execute(input);
-  }
+	@Mutation(() => LoginUserOutput)
+	async login(
+		@Arg("data", () => LoginUserInput) input: LoginUserInput,
+	): Promise<LoginUserOutput> {
+		return this.loginUserUseCase.execute(input);
+	}
 }

@@ -7,4 +7,4 @@ export interface CreateTransactionUseCaseInput {
 	description?: string;
 	occurredAt?: Date;
 	userId: string;
-};
+}

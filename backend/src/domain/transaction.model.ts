@@ -1,4 +1,11 @@
-import { Field, Float, GraphQLISODateTime, ID, ObjectType, registerEnumType } from "type-graphql";
+import {
+	Field,
+	Float,
+	GraphQLISODateTime,
+	ID,
+	ObjectType,
+	registerEnumType,
+} from "type-graphql";
 
 export enum TransactionType {
 	INCOME = "INCOME",

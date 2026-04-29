@@ -24,13 +24,12 @@ const getTokenFromAuthorizationHeader = (
 
 export const createGraphqlContext = async ({
 	req,
-    res
+	res,
 }: ExpressContextFunctionArgument): Promise<GraphqlContext> => {
-    
-    const authorizationHeader = req.headers.authorization;
-    
+	const authorizationHeader = req.headers.authorization;
+
 	const token = getTokenFromAuthorizationHeader(authorizationHeader);
-    
+
 	if (!token) {
 		return {
 			user: undefined,
@@ -39,15 +38,15 @@ export const createGraphqlContext = async ({
 	}
 
 	try {
-        const payload = verifyJwt(token);
+		const payload = verifyJwt(token);
 
 		return {
 			user: payload.id,
 			token,
 		};
 	} catch (error) {
-        console.error(error);
-        
+		console.error(error);
+
 		return {
 			user: undefined,
 			token: undefined,

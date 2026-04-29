@@ -31,7 +31,7 @@ export class UpdateTransactionUseCase {
 			title: normalizedTitle,
 			description:
 				input.description !== undefined
-					? (normalizedDescription || undefined)
+					? normalizedDescription || undefined
 					: undefined,
 		});
 
