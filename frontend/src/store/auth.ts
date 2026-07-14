@@ -1,6 +1,7 @@
 import { api } from "@/api/apollo"
 import { LOGIN } from "@/api/mutation/Login"
-import type { LoginInput, User } from "@/types"
+import { REGISTER } from "@/api/mutation/Register"
+import type { LoginInput, RegisterUserInput, User } from "@/types"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
@@ -9,6 +10,7 @@ interface AuthState {
 	token: string | null
 	isAuthenticated: boolean
 	login: (data: LoginInput) => Promise<boolean>
+	signup: (data: RegisterUserInput) => Promise<boolean>
 	logout: () => void
 }
 
@@ -23,8 +25,10 @@ export const useAuthStore = create<AuthState>()(
 					const { data } = await api.mutate({
 						mutation: LOGIN,
 						variables: {
-							email: loginInput.email,
-							password: loginInput.password
+							data: {
+								email: loginInput.email,
+								password: loginInput.password
+							}
 						}
 					})
 
@@ -46,6 +50,42 @@ export const useAuthStore = create<AuthState>()(
 					return false
 				} catch (error) {
 					console.log("Erro ao fazer o login")
+					throw error
+				}
+			},
+			signup: async (registerData: RegisterUserInput) => {
+				try {
+					const { data } = await api.mutate({
+						mutation: REGISTER,
+						variables: {
+							data: {
+								name: registerData.name,
+								email: registerData.email,
+								password: registerData.password
+							}
+						}
+					})
+					if (data?.registerUser) {
+						const { token, user } = data.registerUser
+						set({
+							user: {
+								id: user.id,
+								name: user.name,
+								email: user.email,
+								role: user.role,
+								createdAt: user.createdAt,
+								updatedAt: user.updatedAt
+							},
+							token,
+							isAuthenticated: true
+						})
+
+						return true
+					}
+
+					return false
+				} catch (error) {
+					console.log("Erro ao fazer o cadastro")
 					throw error
 				}
 			},

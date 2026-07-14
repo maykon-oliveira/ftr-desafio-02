@@ -3,14 +3,19 @@ import { gql } from "@apollo/client"
 import type { TypedDocumentNode } from "@apollo/client";
 
 type LoginMutation = {
-	login: {
-		token: string;
-		user: User
-	};
+  login: {
+    token: string;
+    user: User
+  };
 };
+
+type LoginMutationVariables = {
+  data: LoginInput;
+};
+
 export const LOGIN: TypedDocumentNode<
-	LoginMutation,
-	LoginInput
+  LoginMutation,
+  LoginMutationVariables
 > = gql`
 	mutation Login($data: LoginUserInput!) {
     login(data: $data) {
@@ -19,9 +24,8 @@ export const LOGIN: TypedDocumentNode<
         id
         name
         email
-        role
-		createdAt
-		updatedAt
+		    createdAt
+		    updatedAt
       }
     }
   }

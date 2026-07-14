@@ -12,31 +12,32 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { toast } from "sonner"
 import { useAuthStore } from "@/store/auth"
-import { Field, FieldGroup, FieldLabel, FieldSeparator, FieldSet } from "@/components/ui/field"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Field, FieldDescription, FieldLabel, FieldSeparator, FieldSet } from "@/components/ui/field"
 import { cn } from "@/lib/utils"
-import { UserPlus2Icon } from "lucide-react"
+import { LogInIcon } from "lucide-react"
 
-export function Login() {
+export function SignUp() {
+	const [name, setName] = useState("Maykon")
 	const [email, setEmail] = useState("maykon@email.com")
 	const [password, setPassword] = useState("12345678")
 	const [loading, setLoading] = useState(false)
-	const login = useAuthStore((state) => state.login)
+	const signup = useAuthStore((state) => state.signup)
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
 		setLoading(true)
 
 		try {
-			const loginMutate = await login({
+			const signupMutate = await signup({
+				name,
 				email,
 				password,
 			})
-			if (loginMutate) {
-				toast.success("Login realizado com sucesso!")
+			if (signupMutate) {
+				toast.success("Cadastro realizado com sucesso!")
 			}
 		} catch (error: any) {
-			toast.error(error?.message || "Erro ao realizar login")
+			toast.error(error?.message || "Falha ao realizar cadastro")
 		} finally {
 			setLoading(false)
 		}
@@ -48,15 +49,26 @@ export function Login() {
 			<Card className="w-full max-w-md rounded-xl">
 				<CardHeader className="text-center">
 					<CardTitle className="text-2xl font-bold">
-						Fazer login
+						Criar conta
 					</CardTitle>
 					<CardDescription>
-						Entre na sua conta para continuar
+						Comece a controlar suas finanças ainda hoje
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<form onSubmit={handleSubmit}>
 						<FieldSet>
+							<Field>
+								<FieldLabel htmlFor="name">Nome completo</FieldLabel>
+								<Input
+									id="name"
+									type="name"
+									placeholder="Seu nome completo"
+									value={name}
+									onChange={(e) => setName(e.target.value)}
+									required
+								/>
+							</Field>
 							<Field>
 								<FieldLabel htmlFor="email">E-mail</FieldLabel>
 								<Input
@@ -78,29 +90,23 @@ export function Login() {
 									onChange={(e) => setPassword(e.target.value)}
 									required
 								/>
+								<FieldDescription>
+									A senha deve ter no mínimo 8 caracteres
+								</FieldDescription>
 							</Field>
 
-							<FieldGroup className="flex-row justify-between">
-								<Field className="w-auto" orientation="horizontal">
-									<Checkbox id="push-tasks" />
-									<FieldLabel htmlFor="push-tasks" className="font-normal">
-										Lembrar-me								</FieldLabel>
-								</Field>
-								<Link className="text-brand-base" to={""}>Recuperar senha</Link>
-							</FieldGroup>
-
 							<Button type="submit" className="w-full bg-brand-base" disabled={loading}>
-								Entrar
+								Criar conta
 							</Button>
 
 							<FieldSeparator>ou</FieldSeparator>
 
 							<div className="flex flex-col space-y-5 items-center">
-								<p className="text-gray-600">Ainda não tem uma conta?</p>
+								<p className="text-gray-600">Já tem uma conta?</p>
 
-								<Link to="/signup" className={cn(buttonVariants({ variant: "outline" }), "w-full")}>
-									<UserPlus2Icon />
-									Criar conta
+								<Link to="/login" className={cn(buttonVariants({ variant: "outline" }), "w-full")}>
+									<LogInIcon />
+									Fazer login
 								</Link>
 							</div>
 						</FieldSet>
