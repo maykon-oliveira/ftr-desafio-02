@@ -89,7 +89,7 @@ export function Login() {
 								<Link className="text-brand-base" to={""}>Recuperar senha</Link>
 							</FieldGroup>
 
-							<Button type="submit" className="w-full bg-brand-base" disabled={loading}>
+							<Button type="submit" className="w-full" disabled={loading}>
 								Entrar
 							</Button>
 
