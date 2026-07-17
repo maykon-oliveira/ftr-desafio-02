@@ -5,6 +5,8 @@ import { Icon } from "./icon/Icon"
 import type { IconType } from "./icon/type"
 import { cn } from "@/lib/utils"
 import { Badge } from "./ui/badge"
+import { useCategoryStore } from "@/store/category"
+import { toast } from "sonner"
 
 interface CategoryCardProps {
 	category: Category
@@ -12,6 +14,18 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ category, onEdit }: CategoryCardProps) {
+	const deleteCategory = useCategoryStore((state) => state.deleteCategory)
+	const isLoading = useCategoryStore((state) => state.isLoading)
+
+	const handleDelete = async () => {
+		try {
+			await deleteCategory(category.id)
+			toast.success("Categoria removida com sucesso!")
+		} catch {
+			toast.error("Erro ao remover categoria")
+		}
+	}
+
 	return (
 		<Card >
 			<CardHeader className="flex items-center justify-between">
@@ -22,6 +36,8 @@ export function CategoryCard({ category, onEdit }: CategoryCardProps) {
 					<Button
 						size="icon"
 						variant="destructive"
+						onClick={handleDelete}
+						disabled={isLoading}
 					>
 						<Icon iconName="trash" />
 					</Button>

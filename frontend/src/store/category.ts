@@ -1,5 +1,6 @@
 import { api } from "@/api/apollo"
 import { CREATE_CATEGORY, type CreateCategoryInput } from "@/api/mutation/CreateCategory"
+import { DELETE_CATEGORY } from "@/api/mutation/DeleteCategory"
 import { UPDATE_CATEGORY, type UpdateCategoryInput } from "@/api/mutation/UpdateCategory"
 import { LIST_CATEGORIES } from "@/api/query/ListCategories"
 import type { Category } from "@/types"
@@ -11,6 +12,7 @@ interface CategoryState {
 	error: string | null
 	createCategory: (data: CreateCategoryInput) => Promise<Category | null>
 	updateCategory: (id: string, data: UpdateCategoryInput) => Promise<Category | null>
+	deleteCategory: (id: string) => Promise<boolean>
 	fetchCategories: () => Promise<void>
 	setCategories: (categories: Category[]) => void
 	setError: (error: string | null) => void
@@ -83,6 +85,30 @@ export const useCategoryStore = create<CategoryState>((set) => ({
 			return null
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : "Error updating category"
+			set({ error: errorMessage, isLoading: false })
+			throw error
+		}
+	},
+	deleteCategory: async (id: string) => {
+		try {
+			set({ isLoading: true, error: null })
+			const { data } = await api.mutate({
+				mutation: DELETE_CATEGORY,
+				variables: { id },
+			})
+
+			if (data?.deleteCategory?.success) {
+				set((state) => ({
+					categories: state.categories.filter((category) => category.id !== id),
+					isLoading: false,
+				}))
+				return true
+			}
+
+			set({ isLoading: false })
+			return false
+		} catch (error) {
+			const errorMessage = error instanceof Error ? error.message : "Error deleting category"
 			set({ error: errorMessage, isLoading: false })
 			throw error
 		}
