@@ -17,3 +17,14 @@ export interface RegisterUserInput {
 	email: string
 	password: string
 }
+
+export interface Category {
+	id: string
+	name: string
+	description?: string
+	icon: string
+	color: string
+	userId: string
+	createdAt: string
+	updatedAt: string
+}

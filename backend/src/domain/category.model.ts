@@ -8,6 +8,15 @@ export class CategoryModel {
 	@Field(() => String)
 	name!: string;
 
+	@Field(() => String, { nullable: true })
+	description?: string;
+
+	@Field(() => String)
+	icon!: string;
+
+	@Field(() => String)
+	color!: string;
+
 	@Field(() => String)
 	userId!: string;
 

@@ -11,6 +11,9 @@ export class PrismaCategoryRepository {
 			data: {
 				name: input.name,
 				userId: input.userId,
+				description: input.description,
+				icon: input.icon,
+				color: input.color,
 			},
 		});
 
@@ -18,6 +21,9 @@ export class PrismaCategoryRepository {
 			id: category.id,
 			name: category.name,
 			userId: category.userId,
+			description: category.description || undefined,
+			icon: category.icon,
+			color: category.color,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
 		};
@@ -39,6 +45,9 @@ export class PrismaCategoryRepository {
 			id: category.id,
 			name: category.name,
 			userId: category.userId,
+			description: category.description || undefined,
+			icon: category.icon,
+			color: category.color,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
 		};
@@ -57,6 +66,9 @@ export class PrismaCategoryRepository {
 		return {
 			id: category.id,
 			name: category.name,
+			description: category.description || undefined,
+			icon: category.icon,
+			color: category.color,
 			userId: category.userId,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
@@ -72,6 +84,9 @@ export class PrismaCategoryRepository {
 		return categories.map((category) => ({
 			id: category.id,
 			name: category.name,
+			description: category.description || undefined,
+			icon: category.icon,
+			color: category.color,
 			userId: category.userId,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
@@ -91,12 +106,18 @@ export class PrismaCategoryRepository {
 			where: { id: input.id },
 			data: {
 				...(input.name !== undefined && { name: input.name }),
+				...(input.description !== undefined && { description: input.description }),
+				...(input.icon !== undefined && { icon: input.icon }),
+				...(input.color !== undefined && { color: input.color }),
 			},
 		});
 
 		return {
 			id: category.id,
 			name: category.name,
+			description: category.description || undefined,
+			icon: category.icon,
+			color: category.color,
 			userId: category.userId,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
