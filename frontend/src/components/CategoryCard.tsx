@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { Badge } from "./ui/badge"
 import { useCategoryStore } from "@/store/category"
 import { toast } from "sonner"
+import { colorsVariant, type ColorsType } from "@/lib/colors"
 
 interface CategoryCardProps {
 	category: Category
@@ -26,27 +27,29 @@ export function CategoryCard({ category, onEdit }: CategoryCardProps) {
 		}
 	}
 
+	const color = colorsVariant[category.color as ColorsType];
+
 	return (
 		<Card >
 			<CardHeader className="flex items-center justify-between">
-				<div className={cn(buttonVariants({ size: "icon" }))} style={{ backgroundColor: category.color }}>
+				<div className={cn(buttonVariants({ size: "icon" }), color.light, color.text)}>
 					<Icon iconName={category.icon as IconType} />
 				</div>
 				<div className="flex gap-2">
 					<Button
 						size="icon"
-						variant="destructive"
+						variant="outline"
 						onClick={handleDelete}
 						disabled={isLoading}
 					>
-						<Icon iconName="trash" />
+						<Icon iconName="trash" className="text-destructive" />
 					</Button>
 					<Button
 						size="icon"
 						variant="outline"
 						onClick={() => onEdit(category)}
 					>
-						<Icon iconName="square-pen" />
+						<Icon iconName="squarePen" />
 					</Button>
 				</div>
 			</CardHeader>
@@ -57,7 +60,7 @@ export function CategoryCard({ category, onEdit }: CategoryCardProps) {
 				)}
 			</CardContent>
 			<CardFooter className="items-center justify-between">
-				<Badge style={{ backgroundColor: category.color }}>
+				<Badge className={cn(color.light, color.text)}>
 					{category.name}
 				</Badge>
 			</CardFooter>

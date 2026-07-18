@@ -1,17 +1,13 @@
-import { cn } from "@/lib/utils";
-import type { IconType } from "./type";
+import type { LucideProps } from "lucide-react";
+
+import { Icons, type IconType } from "./type";
 
 type IconProps = {
 	iconName: IconType
-} & React.ComponentProps<"img">
+} & LucideProps;
 
-export function Icon({ className, iconName, ...props }: IconProps) {
-	return <img
-		src={`/src/assets/Icon/${iconName}.svg`}
-		className={cn(
-			"size-4 ",
-			className
-		)}
-		{...props}
-	/>
+export function Icon({ iconName, ...props }: IconProps) {
+	const IconComponent = Icons[iconName];
+
+	return <IconComponent {...props} />;
 }

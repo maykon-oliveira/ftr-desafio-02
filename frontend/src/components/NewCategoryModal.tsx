@@ -15,6 +15,8 @@ import { Field, FieldDescription, FieldLabel } from "./ui/field"
 import type { Category } from "@/types"
 import { Icon } from "./icon/Icon"
 import type { IconType } from "./icon/type"
+import { cn } from "@/lib/utils"
+import { colorsVariant, colors, type ColorsType } from "@/lib/colors"
 
 interface NewCategoryModalProps {
 	isOpen: boolean
@@ -23,35 +25,24 @@ interface NewCategoryModalProps {
 	category?: Category
 }
 
-const presetColors = [
-	"#ef4444",
-	"#f97316",
-	"#eab308",
-	"#22c55e",
-	"#3b82f6",
-	"#8b5cf6",
-	"#ec4899",
-	"#64748b",
-];
-
 const presetIcons: IconType[] = [
-	"shopping-cart",
+	"shoppingCart",
 	"utensils",
 	"house",
 	"dumbbell",
-	"heart-pulse",
-	"book-open",
-	"briefcase-business",
+	"heartPulse",
+	"bookOpen",
+	"briefcaseBusiness",
 	"gift",
 	"wallet",
-	"piggy-bank",
-	"car-front",
-	"receipt-text",
+	"piggyBank",
+	"carFront",
+	"receiptText",
 	"tag",
-	"tool-case",
+	"toolCase",
 	"ticket",
-	"paw-print",
-] as const;
+	"pawPrint",
+];
 
 export function NewCategoryModal({
 	isOpen,
@@ -59,11 +50,16 @@ export function NewCategoryModal({
 	onSuccess,
 	category,
 }: NewCategoryModalProps) {
-	const [formData, setFormData] = useState({
+	const [formData, setFormData] = useState<{
+		name: string,
+		description: string,
+		icon: string,
+		color: ColorsType,
+	}>({
 		name: "",
 		description: "",
 		icon: "",
-		color: "",
+		color: "green",
 	})
 	const { createCategory, updateCategory, isLoading, error } = useCategoryStore()
 
@@ -75,14 +71,14 @@ export function NewCategoryModal({
 				name: category.name,
 				description: category.description || "",
 				icon: category.icon,
-				color: category.color,
+				color: category.color as ColorsType,
 			})
 		} else if (isOpen && !category) {
 			setFormData({
 				name: "",
 				description: "",
 				icon: "",
-				color: "",
+				color: "green",
 			})
 		}
 	}, [category, isOpen])
@@ -127,7 +123,7 @@ export function NewCategoryModal({
 				name: "",
 				description: "",
 				icon: "",
-				color: "",
+				color: "green",
 			})
 			onOpenChange(false)
 			onSuccess()
@@ -183,11 +179,14 @@ export function NewCategoryModal({
 								<Button
 									key={iconName}
 									type="button"
-									variant={formData.icon === iconName ? "default" : "outline"}
+									variant="outline"
 									size="icon"
 									onClick={() => setFormData({ ...formData, icon: iconName })}
 									disabled={isLoading}
 									title={iconName}
+									className={cn(
+										formData.icon === iconName ? `${colorsVariant[formData.color].bg} text-white hover:text-white` : ""
+									)}
 								>
 									<Icon iconName={iconName} />
 								</Button>
@@ -200,19 +199,24 @@ export function NewCategoryModal({
 							Cor
 						</FieldLabel>
 						<div className="flex gap-2">
-							{presetColors.map((presetColor) => (
+							{colors.map((color) => (
 								<Button
-									key={presetColor}
-									type="button"
+									variant="ghost"
 									size="icon"
-									className="flex-1"
-									style={{
-										backgroundColor: presetColor,
-										border: formData.color === presetColor ? "2px solid #000" : "none",
-									}}
-									onClick={() => setFormData({ ...formData, color: presetColor })}
+									type="button"
+									className={cn(
+										"border p-1 flex-1",
+										color === formData.color
+											? colorsVariant[color].border
+											: "border-gray-300 hover:border-gray-400"
+									)}
+									onClick={() => setFormData({ ...formData, color: color })}
 									disabled={isLoading}
-								/>
+								>
+									<div
+										className={cn(colorsVariant[color].bg, "size-full rounded")}
+									/>
+								</Button>
 							))}
 						</div>
 					</Field>

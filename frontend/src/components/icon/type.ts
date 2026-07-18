@@ -1,24 +1,46 @@
 
-const ALL_ICONS = [
-	"shopping-cart",
-	"utensils",
-	"house",
-	"dumbbell",
-	"heart-pulse",
-	"book-open",
-	"briefcase-business",
-	"gift",
-	"wallet",
-	"piggy-bank",
-	"car-front",
-	"receipt-text",
-	"tag",
-	"tool-case",
-	"ticket",
-	"paw-print",
-	"plus",
-	"trash",
-	"square-pen"
-] as const;
+import {
+	ShoppingCartIcon,
+	UtensilsIcon,
+	HouseIcon,
+	DumbbellIcon,
+	HeartPulseIcon,
+	BookOpenIcon,
+	BriefcaseBusinessIcon,
+	GiftIcon,
+	WalletIcon,
+	PiggyBankIcon,
+	CarFrontIcon,
+	ReceiptTextIcon,
+	TagIcon,
+	ToolCaseIcon,
+	TicketIcon,
+	PawPrintIcon,
+	PlusIcon,
+	TrashIcon,
+	SquarePenIcon,
+} from "lucide-react";
 
-export type IconType = typeof ALL_ICONS[number];
+export const Icons = {
+	shoppingCart: ShoppingCartIcon,
+	utensils: UtensilsIcon,
+	house: HouseIcon,
+	dumbbell: DumbbellIcon,
+	heartPulse: HeartPulseIcon,
+	bookOpen: BookOpenIcon,
+	briefcaseBusiness: BriefcaseBusinessIcon,
+	gift: GiftIcon,
+	wallet: WalletIcon,
+	piggyBank: PiggyBankIcon,
+	carFront: CarFrontIcon,
+	receiptText: ReceiptTextIcon,
+	tag: TagIcon,
+	toolCase: ToolCaseIcon,
+	ticket: TicketIcon,
+	pawPrint: PawPrintIcon,
+	plus: PlusIcon,
+	trash: TrashIcon,
+	squarePen: SquarePenIcon,
+};
+
+export type IconType = keyof typeof Icons;
