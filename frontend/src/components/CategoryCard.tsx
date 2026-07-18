@@ -30,9 +30,9 @@ export function CategoryCard({ category, onEdit }: CategoryCardProps) {
 	const color = colorsVariant[category.color as ColorsType];
 
 	return (
-		<Card >
+		<Card className="justify-between">
 			<CardHeader className="flex items-center justify-between">
-				<div className={cn(buttonVariants({ size: "icon" }), color.light, color.text)}>
+				<div className={cn(buttonVariants({ size: "icon-lg" }), color.light, color.text)}>
 					<Icon iconName={category.icon as IconType} />
 				</div>
 				<div className="flex gap-2">
@@ -54,7 +54,7 @@ export function CategoryCard({ category, onEdit }: CategoryCardProps) {
 				</div>
 			</CardHeader>
 			<CardContent>
-				<h3 className="font-semibold">{category.name}</h3>
+				<h3 className="font-semibold text-2xl">{category.name}</h3>
 				{category.description && (
 					<p className="text-xs text-muted-foreground">{category.description}</p>
 				)}
@@ -63,6 +63,11 @@ export function CategoryCard({ category, onEdit }: CategoryCardProps) {
 				<Badge className={cn(color.light, color.text)}>
 					{category.name}
 				</Badge>
+				<p className="text-muted-foreground">
+					{(category.transactionsCount ?? 0) === 1
+						? "1 item"
+						: `${category.transactionsCount ?? 0} itens`}
+				</p>
 			</CardFooter>
 		</Card>
 	)

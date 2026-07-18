@@ -27,4 +27,5 @@ export interface Category {
 	userId: string
 	createdAt: string
 	updatedAt: string
+	transactionsCount?: number
 }

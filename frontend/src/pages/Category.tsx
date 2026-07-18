@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import type { Category } from "@/types"
 import { CategoryCard } from "@/components/CategoryCard"
 import { Icon } from "@/components/icon/Icon"
+import { CategoryStats } from "@/components/CategoryCardStats"
 
 export function Category() {
 	const [isModalOpen, setIsModalOpen] = useState(false)
@@ -58,9 +59,13 @@ export function Category() {
 					<p className="text-muted-foreground">Carregando categorias...</p>
 				</div>
 			) : (
-				<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-					{categories.map((category) => <CategoryCard key={category.id} category={category} onEdit={handleEdit} />)}
-				</div>
+				<>
+					<CategoryStats />
+
+					<div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+						{categories.map((category) => <CategoryCard key={category.id} category={category} onEdit={handleEdit} />)}
+					</div>
+				</>
 			)}
 		</div>
 	)

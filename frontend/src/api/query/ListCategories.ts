@@ -17,9 +17,7 @@ export const LIST_CATEGORIES: TypedDocumentNode<ListCategoriesQuery> = gql`
 				description
 				icon
 				color
-				userId
-				createdAt
-				updatedAt
+				transactionsCount
 			}
 		}
 	}

@@ -19,6 +19,7 @@ import {
 	PlusIcon,
 	TrashIcon,
 	SquarePenIcon,
+	ArrowUpDownIcon,
 } from "lucide-react";
 
 export const Icons = {
@@ -41,6 +42,7 @@ export const Icons = {
 	plus: PlusIcon,
 	trash: TrashIcon,
 	squarePen: SquarePenIcon,
+	arrowUpDown: ArrowUpDownIcon
 };
 
 export type IconType = keyof typeof Icons;

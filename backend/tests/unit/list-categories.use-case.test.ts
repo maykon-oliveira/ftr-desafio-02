@@ -8,6 +8,7 @@ const makeCategory = (id: string, name: string, userId: string) => ({
 	userId,
 	createdAt: new Date(),
 	updatedAt: new Date(),
+	transactionsCount: 0,
 });
 
 describe("ListCategoriesUseCase", () => {
@@ -30,6 +31,7 @@ describe("ListCategoriesUseCase", () => {
 		expect(result.categories).toHaveLength(2);
 		expect(result.categories[0].name).toBe("Food");
 		expect(result.categories[1].name).toBe("Transport");
+		expect(result.categories[0].transactionsCount).toBe(0);
 	});
 
 	it("should return empty list when user has no categories", async () => {

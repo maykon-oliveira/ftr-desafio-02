@@ -26,6 +26,7 @@ export class PrismaCategoryRepository {
 			color: category.color,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
+			transactionsCount: 0,
 		};
 	}
 
@@ -50,6 +51,7 @@ export class PrismaCategoryRepository {
 			color: category.color,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
+			transactionsCount: 0,
 		};
 	}
 
@@ -72,6 +74,7 @@ export class PrismaCategoryRepository {
 			userId: category.userId,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
+			transactionsCount: 0,
 		};
 	}
 
@@ -79,6 +82,11 @@ export class PrismaCategoryRepository {
 		const categories = await prisma.category.findMany({
 			where: { userId },
 			orderBy: { name: "asc" },
+			include: {
+				_count: {
+					select: { transactions: true },
+				},
+			},
 		});
 
 		return categories.map((category) => ({
@@ -90,6 +98,7 @@ export class PrismaCategoryRepository {
 			userId: category.userId,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
+			transactionsCount: category._count?.transactions ?? 0,
 		}));
 	}
 
@@ -121,6 +130,7 @@ export class PrismaCategoryRepository {
 			userId: category.userId,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
+			transactionsCount: 0,
 		};
 	}
 

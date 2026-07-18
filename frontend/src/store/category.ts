@@ -121,8 +121,10 @@ export const useCategoryStore = create<CategoryState>((set) => ({
 			})
 
 			if (data?.listCategories) {
+				const categories = [...data.listCategories.categories].sort((a, b) => (a.transactionsCount ?? 0) > (b.transactionsCount ?? 0) ? 1 : -1)
+
 				set({
-					categories: data.listCategories.categories,
+					categories,
 					isLoading: false,
 				})
 			}
