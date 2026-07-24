@@ -10,7 +10,8 @@
 		"generate": "bun prisma generate",
 		"test": "bun test",
 		"test:unit": "bun test tests/unit",
-		"test:e2e": "bun test tests/e2e"
+		"test:e2e": "bun test tests/e2e",
+		"format": "bun @biomejs/biome format --write"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.7",

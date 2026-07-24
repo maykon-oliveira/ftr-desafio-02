@@ -3,10 +3,9 @@ import type { TransactionType } from "~/domain/transaction.model";
 export interface UpdateTransactionUseCaseInput {
 	id: string;
 	userId: string;
-	title?: string;
+	description?: string;
 	amount?: number;
 	type?: TransactionType;
-	description?: string;
 	occurredAt?: Date;
 	categoryId?: string;
 }

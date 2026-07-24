@@ -29,3 +29,17 @@ export interface Category {
 	updatedAt: string
 	transactionsCount?: number
 }
+
+export type TransactionType = "EXPENSE" | "INCOME"
+
+export interface Transaction {
+	id: string
+	description: string
+	amount: number
+	type: TransactionType
+	category: Pick<Category, "id" | "name" | "icon" | "color">
+	occurredAt: string
+	createdAt: string
+	updatedAt: string
+	userId: string
+}

@@ -153,6 +153,7 @@ export function NewCategoryModal({
 							value={formData.name}
 							onChange={(e) => setFormData({ ...formData, name: e.target.value })}
 							disabled={isLoading}
+							required
 						/>
 					</Field>
 

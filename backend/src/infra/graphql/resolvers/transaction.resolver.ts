@@ -1,9 +1,11 @@
 import {
 	Arg,
 	Ctx,
+	FieldResolver,
 	Mutation,
 	Query,
 	Resolver,
+	Root,
 	UseMiddleware,
 } from "type-graphql";
 import { Service } from "typedi";
@@ -11,6 +13,7 @@ import { CreateTransactionUseCase } from "~/application/use-cases/create-transac
 import { DeleteTransactionUseCase } from "~/application/use-cases/delete-transaction/delete-transaction.use-case";
 import { ListTransactionsUseCase } from "~/application/use-cases/list-transactions/list-transactions.use-case";
 import { UpdateTransactionUseCase } from "~/application/use-cases/update-transaction/update-transaction.use-case";
+import { PrismaCategoryRepository } from "~/application/ports/prisma-category.repository";
 import { isAuth } from "../middleware/auth.middleware";
 import type { GraphqlContext } from "../context";
 import { CreateTransactionInput } from "../inputs/create-transaction.input";
@@ -19,15 +22,18 @@ import { CreateTransactionOutput } from "../outputs/create-transaction.output";
 import { DeleteTransactionOutput } from "../outputs/delete-transaction.output";
 import { ListTransactionsOutput } from "../outputs/list-transactions.output";
 import { UpdateTransactionOutput } from "../outputs/update-transaction.output";
+import { TransactionModel } from "~/domain/transaction.model";
+import { CategoryModel } from "~/domain/category.model";
 
 @Service()
-@Resolver()
+@Resolver(TransactionModel)
 export class TransactionResolver {
 	constructor(
 		private readonly createTransactionUseCase: CreateTransactionUseCase,
 		private readonly deleteTransactionUseCase: DeleteTransactionUseCase,
 		private readonly listTransactionsUseCase: ListTransactionsUseCase,
 		private readonly updateTransactionUseCase: UpdateTransactionUseCase,
+		private readonly categoryRepository: PrismaCategoryRepository,
 	) {}
 
 	@Query(() => ListTransactionsOutput)
@@ -76,5 +82,19 @@ export class TransactionResolver {
 			id,
 			userId: context.user!,
 		});
+	}
+
+	@FieldResolver(() => CategoryModel)
+	async category(@Root() transaction: TransactionModel): Promise<CategoryModel> {
+		const category = await this.categoryRepository.findByIdAndUserId(
+			transaction.categoryId,
+			transaction.userId,
+		);
+
+		if (!category) {
+			throw new Error(`Category not found for transaction ${transaction.id}`);
+		}
+
+		return category;
 	}
 }

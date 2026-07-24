@@ -6,6 +6,7 @@ import {
 	ObjectType,
 	registerEnumType,
 } from "type-graphql";
+import { CategoryModel } from "./category.model";
 
 export enum TransactionType {
 	INCOME = "INCOME",
@@ -22,7 +23,7 @@ export class TransactionModel {
 	id!: string;
 
 	@Field(() => String)
-	title!: string;
+	description!: string;
 
 	@Field(() => Float)
 	amount!: number;
@@ -30,17 +31,17 @@ export class TransactionModel {
 	@Field(() => TransactionType)
 	type!: TransactionType;
 
-	@Field(() => String, { nullable: true })
-	description?: string;
-
 	@Field(() => GraphQLISODateTime)
 	occurredAt!: Date;
 
 	@Field(() => String)
 	userId!: string;
 
-	@Field(() => String, { nullable: true })
-	categoryId?: string;
+	// Internal — not exposed in GraphQL; used by the field resolver
+	categoryId!: string;
+
+	@Field(() => CategoryModel)
+	category!: CategoryModel;
 
 	@Field(() => GraphQLISODateTime)
 	createdAt!: Date;

@@ -115,7 +115,9 @@ export class PrismaCategoryRepository {
 			where: { id: input.id },
 			data: {
 				...(input.name !== undefined && { name: input.name }),
-				...(input.description !== undefined && { description: input.description }),
+				...(input.description !== undefined && {
+					description: input.description,
+				}),
 				...(input.icon !== undefined && { icon: input.icon }),
 				...(input.color !== undefined && { color: input.color }),
 			},

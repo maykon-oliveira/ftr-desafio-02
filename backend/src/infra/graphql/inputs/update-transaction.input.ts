@@ -4,19 +4,15 @@ import { TransactionType } from "~/domain/transaction.model";
 
 @InputType()
 export class UpdateTransactionInput
-	implements Omit<UpdateTransactionUseCaseInput, "id" | "userId">
-{
+	implements Omit<UpdateTransactionUseCaseInput, "id" | "userId"> {
 	@Field(() => String, { nullable: true })
-	title?: string;
+	description?: string;
 
 	@Field(() => Float, { nullable: true })
 	amount?: number;
 
 	@Field(() => TransactionType, { nullable: true })
 	type?: TransactionType;
-
-	@Field(() => String, { nullable: true })
-	description?: string;
 
 	@Field(() => GraphQLISODateTime, { nullable: true })
 	occurredAt?: Date;

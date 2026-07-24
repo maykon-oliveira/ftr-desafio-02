@@ -5,7 +5,7 @@ import type { UpdateTransactionUseCaseOutput } from "~/application/dtos/update-t
 import { PrismaTransactionRepository } from "~/application/ports/prisma-transaction.repository";
 import { InvalidUpdateTransactionAmountError } from "./errors/invalid-update-transaction-amount.error";
 import { InvalidUpdateTransactionCategoryError } from "./errors/invalid-update-transaction-category.error";
-import { InvalidUpdateTransactionTitleError } from "./errors/invalid-update-transaction-title.error";
+import { InvalidUpdateTransactionDescriptionError } from "./errors/invalid-update-transaction-description.error";
 import { TransactionNotFoundError } from "./errors/transaction-not-found.error";
 
 @Service()
@@ -13,17 +13,16 @@ export class UpdateTransactionUseCase {
 	constructor(
 		private readonly transactionRepository: PrismaTransactionRepository,
 		private readonly categoryRepository: PrismaCategoryRepository,
-	) {}
+	) { }
 
 	async execute(
 		input: UpdateTransactionUseCaseInput,
 	): Promise<UpdateTransactionUseCaseOutput> {
-		const normalizedTitle = input.title?.trim();
 		const normalizedDescription = input.description?.trim();
 		const normalizedCategoryId = input.categoryId?.trim();
 
-		if (input.title !== undefined && !normalizedTitle) {
-			throw new InvalidUpdateTransactionTitleError();
+		if (input.description !== undefined && !normalizedDescription) {
+			throw new InvalidUpdateTransactionDescriptionError();
 		}
 
 		if (input.amount !== undefined && input.amount <= 0) {
@@ -47,11 +46,7 @@ export class UpdateTransactionUseCase {
 
 		const transaction = await this.transactionRepository.updateByIdAndUserId({
 			...input,
-			title: normalizedTitle,
-			description:
-				input.description !== undefined
-					? normalizedDescription || undefined
-					: undefined,
+			description: normalizedDescription,
 			categoryId:
 				input.categoryId !== undefined
 					? normalizedCategoryId || undefined

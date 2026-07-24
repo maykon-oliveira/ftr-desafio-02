@@ -2,7 +2,7 @@ import { describe, expect, it, mock } from "bun:test";
 import { CreateTransactionUseCase } from "~/application/use-cases/create-transaction/create-transaction.use-case";
 import { InvalidTransactionAmountError } from "~/application/use-cases/create-transaction/errors/invalid-transaction-amount.error";
 import { InvalidTransactionCategoryError } from "~/application/use-cases/create-transaction/errors/invalid-transaction-category.error";
-import { InvalidTransactionTitleError } from "~/application/use-cases/create-transaction/errors/invalid-transaction-title.error";
+import { InvalidTransactionDescriptionError } from "~/application/use-cases/create-transaction/errors/invalid-transaction-description.error";
 import type { PrismaCategoryRepository } from "~/application/ports/prisma-category.repository";
 import type { PrismaTransactionRepository } from "~/application/ports/prisma-transaction.repository";
 
@@ -76,7 +76,7 @@ describe("CreateTransactionUseCase", () => {
 				type: "EXPENSE",
 				userId: "user-1",
 			}),
-		).rejects.toBeInstanceOf(InvalidTransactionTitleError);
+		).rejects.toBeInstanceOf(InvalidTransactionDescriptionError);
 	});
 
 	it("should throw when amount is invalid", async () => {

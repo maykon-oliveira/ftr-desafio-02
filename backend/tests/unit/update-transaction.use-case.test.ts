@@ -2,7 +2,7 @@ import { describe, expect, it, mock } from "bun:test";
 import { UpdateTransactionUseCase } from "~/application/use-cases/update-transaction/update-transaction.use-case";
 import { InvalidUpdateTransactionAmountError } from "~/application/use-cases/update-transaction/errors/invalid-update-transaction-amount.error";
 import { InvalidUpdateTransactionCategoryError } from "~/application/use-cases/update-transaction/errors/invalid-update-transaction-category.error";
-import { InvalidUpdateTransactionTitleError } from "~/application/use-cases/update-transaction/errors/invalid-update-transaction-title.error";
+import { InvalidUpdateTransactionTitleError } from "~/application/use-cases/update-transaction/errors/invalid-update-transaction-description.error";
 import { TransactionNotFoundError } from "~/application/use-cases/update-transaction/errors/transaction-not-found.error";
 import type { PrismaCategoryRepository } from "~/application/ports/prisma-category.repository";
 import type { PrismaTransactionRepository } from "~/application/ports/prisma-transaction.repository";

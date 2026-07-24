@@ -4,10 +4,9 @@ import { TransactionType } from "~/domain/transaction.model";
 
 @InputType()
 export class CreateTransactionInput
-	implements Omit<CreateTransactionUseCaseInput, "userId">
-{
+	implements Omit<CreateTransactionUseCaseInput, "userId"> {
 	@Field(() => String)
-	title!: string;
+	description!: string;
 
 	@Field(() => Float)
 	amount!: number;
@@ -15,12 +14,9 @@ export class CreateTransactionInput
 	@Field(() => TransactionType)
 	type!: TransactionType;
 
-	@Field(() => String, { nullable: true })
-	description?: string;
+	@Field(() => GraphQLISODateTime)
+	occurredAt!: Date;
 
-	@Field(() => GraphQLISODateTime, { nullable: true })
-	occurredAt?: Date;
-
-	@Field(() => String, { nullable: true })
-	categoryId?: string;
+	@Field(() => String)
+	categoryId!: string;
 }

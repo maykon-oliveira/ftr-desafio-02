@@ -14,28 +14,37 @@ export class PrismaTransactionRepository {
 	): Promise<TransactionModel> {
 		const transaction = await prisma.transaction.create({
 			data: {
-				title: input.title,
+				description: input.description,
 				amount: input.amount,
 				type: input.type,
-				description: input.description,
 				occurredAt: input.occurredAt,
 				categoryId: input.categoryId,
 				userId: input.userId,
 			},
+			select: {
+				id: true,
+				description: true,
+				amount: true,
+				type: true,
+				occurredAt: true,
+				userId: true,
+				categoryId: true,
+				createdAt: true,
+				updatedAt: true,
+			}
 		});
 
 		return {
 			id: transaction.id,
-			title: transaction.title,
+			description: transaction.description,
 			amount: transaction.amount,
 			type: transaction.type as TransactionType,
-			description: transaction.description ?? undefined,
 			occurredAt: transaction.occurredAt,
 			userId: transaction.userId,
-			categoryId: transaction.categoryId ?? undefined,
+			categoryId: transaction.categoryId,
 			createdAt: transaction.createdAt,
 			updatedAt: transaction.updatedAt,
-		};
+		} as TransactionModel;
 	}
 
 	async findManyByUserId(userId: string): Promise<TransactionModel[]> {
@@ -46,20 +55,30 @@ export class PrismaTransactionRepository {
 			orderBy: {
 				occurredAt: "desc",
 			},
+			select: {
+				id: true,
+				description: true,
+				amount: true,
+				type: true,
+				occurredAt: true,
+				userId: true,
+				categoryId: true,
+				createdAt: true,
+				updatedAt: true,
+			}
 		});
 
 		return transactions.map((transaction) => ({
 			id: transaction.id,
-			title: transaction.title,
+			description: transaction.description,
 			amount: transaction.amount,
 			type: transaction.type as TransactionType,
-			description: transaction.description ?? undefined,
 			occurredAt: transaction.occurredAt,
 			userId: transaction.userId,
-			categoryId: transaction.categoryId ?? undefined,
+			categoryId: transaction.categoryId,
 			createdAt: transaction.createdAt,
 			updatedAt: transaction.updatedAt,
-		}));
+		})) as TransactionModel[];
 	}
 
 	async deleteByIdAndUserId(id: string, userId: string): Promise<boolean> {
@@ -92,26 +111,35 @@ export class PrismaTransactionRepository {
 				id: input.id,
 			},
 			data: {
-				title: input.title,
+				description: input.description,
 				amount: input.amount,
 				type: input.type,
-				description: input.description,
 				occurredAt: input.occurredAt,
 				categoryId: input.categoryId,
 			},
+			select: {
+				id: true,
+				description: true,
+				amount: true,
+				type: true,
+				occurredAt: true,
+				userId: true,
+				categoryId: true,
+				createdAt: true,
+				updatedAt: true,
+			}
 		});
 
 		return {
 			id: transaction.id,
-			title: transaction.title,
+			description: transaction.description,
 			amount: transaction.amount,
 			type: transaction.type as TransactionType,
-			description: transaction.description ?? undefined,
 			occurredAt: transaction.occurredAt,
 			userId: transaction.userId,
-			categoryId: transaction.categoryId ?? undefined,
+			categoryId: transaction.categoryId,
 			createdAt: transaction.createdAt,
 			updatedAt: transaction.updatedAt,
-		};
+		} as TransactionModel;
 	}
 }

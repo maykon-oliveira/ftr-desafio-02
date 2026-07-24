@@ -3,7 +3,8 @@ import type { UpdateCategoryUseCaseInput } from "~/application/dtos/update-categ
 
 @InputType()
 export class UpdateCategoryInput
-	implements Omit<UpdateCategoryUseCaseInput, "id" | "userId"> {
+	implements Omit<UpdateCategoryUseCaseInput, "id" | "userId">
+{
 	@Field(() => String, { nullable: true })
 	name?: string;
 

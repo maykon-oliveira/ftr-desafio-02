@@ -722,13 +722,15 @@ describe("GraphQL API e2e", () => {
 		const categoryId = createdCategory.data?.createCategory.category.id;
 
 		const createdTransaction = await graphqlRequest<{
-			createTransaction: { transaction: { id: string; categoryId?: string } };
+			createTransaction: { transaction: { id: string; category: { id: string } } };
 		}>(
 			`mutation Create($data: CreateTransactionInput!) {
 				createTransaction(data: $data) {
 					transaction {
 						id
-						categoryId
+						category {
+							id
+						}
 					}
 				}
 			}`,
@@ -745,7 +747,7 @@ describe("GraphQL API e2e", () => {
 
 		expect(createdTransaction.errors).toBeUndefined();
 		expect(
-			createdTransaction.data?.createTransaction.transaction.categoryId,
+			createdTransaction.data?.createTransaction.transaction.category.id,
 		).toBe(categoryId);
 	});
 

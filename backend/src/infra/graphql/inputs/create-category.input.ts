@@ -3,7 +3,8 @@ import type { CreateCategoryUseCaseInput } from "~/application/dtos/create-categ
 
 @InputType()
 export class CreateCategoryInput
-	implements Omit<CreateCategoryUseCaseInput, "userId"> {
+	implements Omit<CreateCategoryUseCaseInput, "userId">
+{
 	@Field(() => String)
 	name!: string;
 

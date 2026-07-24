@@ -13,15 +13,17 @@ import {
 	createGraphqlContext,
 	type GraphqlContext,
 } from "./infra/graphql/context";
-import cors from 'cors';
+import cors from "cors";
 
 export const createApp = async () => {
 	const app = express();
 
-	app.use(cors({
-		origin: 'http://localhost:5173',
-		credentials: true,
-	}))
+	app.use(
+		cors({
+			origin: "http://localhost:5173",
+			credentials: true,
+		}),
+	);
 
 	const schema = await buildSchema({
 		resolvers: [

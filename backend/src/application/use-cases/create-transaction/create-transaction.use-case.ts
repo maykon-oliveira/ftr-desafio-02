@@ -5,24 +5,23 @@ import { PrismaCategoryRepository } from "~/application/ports/prisma-category.re
 import { PrismaTransactionRepository } from "~/application/ports/prisma-transaction.repository";
 import { InvalidTransactionAmountError } from "./errors/invalid-transaction-amount.error";
 import { InvalidTransactionCategoryError } from "./errors/invalid-transaction-category.error";
-import { InvalidTransactionTitleError } from "./errors/invalid-transaction-title.error";
+import { InvalidTransactionDescriptionError } from "./errors/invalid-transaction-description.error";
 
 @Service()
 export class CreateTransactionUseCase {
 	constructor(
 		private readonly transactionRepository: PrismaTransactionRepository,
 		private readonly categoryRepository: PrismaCategoryRepository,
-	) {}
+	) { }
 
 	async execute(
 		input: CreateTransactionUseCaseInput,
 	): Promise<CreateTransactionUseCaseOutput> {
-		const normalizedTitle = input.title.trim();
-		const normalizedDescription = input.description?.trim();
+		const normalizedDescription = input.description.trim();
 		const normalizedCategoryId = input.categoryId?.trim();
 
-		if (!normalizedTitle) {
-			throw new InvalidTransactionTitleError();
+		if (!normalizedDescription) {
+			throw new InvalidTransactionDescriptionError();
 		}
 
 		if (input.amount <= 0) {
@@ -46,8 +45,7 @@ export class CreateTransactionUseCase {
 
 		const transaction = await this.transactionRepository.create({
 			...input,
-			title: normalizedTitle,
-			description: normalizedDescription || undefined,
+			description: normalizedDescription,
 			categoryId: normalizedCategoryId || undefined,
 		});
 

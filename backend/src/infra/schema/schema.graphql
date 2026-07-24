@@ -28,10 +28,9 @@ type CreateCategoryOutput {
 
 input CreateTransactionInput {
   amount: Float!
-  categoryId: String
-  description: String
-  occurredAt: DateTimeISO
-  title: String!
+  categoryId: String!
+  description: String!
+  occurredAt: DateTimeISO!
   type: TransactionType!
 }
 
@@ -102,12 +101,11 @@ type RegisterUserOutput {
 
 type TransactionModel {
   amount: Float!
-  categoryId: String
+  category: CategoryModel!
   createdAt: DateTimeISO!
-  description: String
+  description: String!
   id: ID!
   occurredAt: DateTimeISO!
-  title: String!
   type: TransactionType!
   updatedAt: DateTimeISO!
   userId: String!
@@ -134,7 +132,6 @@ input UpdateTransactionInput {
   categoryId: String
   description: String
   occurredAt: DateTimeISO
-  title: String
   type: TransactionType
 }
 

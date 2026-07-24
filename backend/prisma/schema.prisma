@@ -45,15 +45,14 @@ model Category {
 
 model Transaction {
   id          String          @id @default(cuid())
-  title       String
+  description String
   amount      Float
   type        TransactionType
-  description String?
   occurredAt  DateTime        @default(now())
   userId      String
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  categoryId  String?
-  category    Category?       @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  categoryId  String
+  category    Category        @relation(fields: [categoryId], references: [id])
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }
