@@ -1,6 +1,7 @@
 import { Icon } from "@/components/icon/Icon";
 import type { IconType } from "@/components/icon/type";
 import { NewTransactionModal } from "@/components/NewTransactionModal";
+import { TransactionFilter } from "@/components/TransactionFilter";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,8 +10,9 @@ import { transactionTypesOptions } from "@/lib/transaction-type";
 import { cn } from "@/lib/utils";
 import { useTransactionStore } from "@/store/transaction";
 import type { Transaction } from "@/types";
+import type { TransactionFilters } from "@/api/query/ListTransactions";
 import { formatDate } from "date-fns";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
 const formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" })
@@ -18,13 +20,36 @@ const formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: 
 export function Transaction() {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedTransaction, setSelectedTransaction] = useState<Transaction | undefined>()
+	const [filters, setFilters] = useState<TransactionFilters>({})
 	const { transactions, isLoading, fetchTransactions, deleteTransaction } = useTransactionStore()
 
-	useEffect(() => {
-		fetchTransactions().catch(() => {
-			toast.error("Erro ao carregar categorias")
+	const loadTransactions = useCallback(() => {
+		// Only include non-empty values in the filter
+		const cleanedFilters: TransactionFilters = {}
+		if (filters.description) cleanedFilters.description = filters.description
+		if (filters.type) cleanedFilters.type = filters.type
+		if (filters.categoryId) cleanedFilters.categoryId = filters.categoryId
+		if (filters.month !== undefined && filters.year !== undefined) {
+			cleanedFilters.month = filters.month
+			cleanedFilters.year = filters.year
+		}
+
+		fetchTransactions(Object.keys(cleanedFilters).length > 0 ? cleanedFilters : undefined).catch(() => {
+			toast.error("Erro ao carregar transações")
 		})
-	}, [fetchTransactions])
+	}, [fetchTransactions, filters])
+
+	useEffect(() => {
+		loadTransactions()
+	}, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+	// Debounced refetch when filters change
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			loadTransactions()
+		}, 300)
+		return () => clearTimeout(timer)
+	}, [filters, loadTransactions])
 
 	const handleCreateNew = () => {
 		setSelectedTransaction(undefined)
@@ -68,6 +93,8 @@ export function Transaction() {
 			transaction={selectedTransaction}
 			onSuccess={() => { }}
 		/>
+
+		<TransactionFilter filters={filters} onFiltersChange={setFilters} />
 
 		<Table className="bg-white rounded-md">
 			<TableHeader>

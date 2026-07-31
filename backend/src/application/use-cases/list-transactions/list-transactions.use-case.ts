@@ -14,6 +14,13 @@ export class ListTransactionsUseCase {
 	): Promise<ListTransactionsUseCaseOutput> {
 		const transactions = await this.transactionRepository.findManyByUserId(
 			input.userId,
+			{
+				description: input.description,
+				type: input.type,
+				categoryId: input.categoryId,
+				month: input.month,
+				year: input.year,
+			},
 		);
 
 		return {

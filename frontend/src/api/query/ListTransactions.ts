@@ -1,6 +1,14 @@
 import { gql } from "@apollo/client"
 import type { TypedDocumentNode } from "@apollo/client"
-import type { Transaction } from "@/types"
+import type { Transaction, TransactionType } from "@/types"
+
+export interface TransactionFilters {
+	description?: string
+	type?: TransactionType
+	categoryId?: string
+	month?: number
+	year?: number
+}
 
 type ListTransactionsQuery = {
 	listTransactions: {
@@ -8,9 +16,13 @@ type ListTransactionsQuery = {
 	}
 }
 
-export const LIST_TRANSACTIONS: TypedDocumentNode<ListTransactionsQuery> = gql`
-	query ListTransactions {
-		listTransactions {
+type ListTransactionsQueryVariables = {
+	filter?: TransactionFilters
+}
+
+export const LIST_TRANSACTIONS: TypedDocumentNode<ListTransactionsQuery, ListTransactionsQueryVariables> = gql`
+	query ListTransactions($filter: ListTransactionsFilter) {
+		listTransactions(filter: $filter) {
 			transactions {
 				id
 				description

@@ -55,6 +55,14 @@ type ListCategoriesOutput {
   categories: [CategoryModel!]!
 }
 
+input ListTransactionsFilter {
+  categoryId: String
+  description: String
+  month: Int
+  type: TransactionType
+  year: Int
+}
+
 type ListTransactionsOutput {
   transactions: [TransactionModel!]!
 }
@@ -84,7 +92,7 @@ type Mutation {
 type Query {
   getUser(id: String!): UserModel!
   listCategories: ListCategoriesOutput!
-  listTransactions: ListTransactionsOutput!
+  listTransactions(filter: ListTransactionsFilter): ListTransactionsOutput!
 }
 
 input RegisterUserInput {

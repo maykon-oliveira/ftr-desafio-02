@@ -47,11 +47,41 @@ export class PrismaTransactionRepository {
 		} as TransactionModel;
 	}
 
-	async findManyByUserId(userId: string): Promise<TransactionModel[]> {
+	async findManyByUserId(
+		userId: string,
+		filters?: {
+			description?: string;
+			type?: string;
+			categoryId?: string;
+			month?: number;
+			year?: number;
+		},
+	): Promise<TransactionModel[]> {
+		const where: Record<string, unknown> = { userId };
+
+		if (filters?.description) {
+			where.description = { contains: filters.description };
+		}
+
+		if (filters?.type) {
+			where.type = filters.type;
+		}
+
+		if (filters?.categoryId) {
+			where.categoryId = filters.categoryId;
+		}
+
+		if (filters?.month !== undefined && filters?.year !== undefined) {
+			const startDate = new Date(filters.year, filters.month - 1, 1);
+			const endDate = new Date(filters.year, filters.month, 1);
+			where.occurredAt = {
+				gte: startDate,
+				lt: endDate,
+			};
+		}
+
 		const transactions = await prisma.transaction.findMany({
-			where: {
-				userId,
-			},
+			where,
 			orderBy: {
 				occurredAt: "desc",
 			},

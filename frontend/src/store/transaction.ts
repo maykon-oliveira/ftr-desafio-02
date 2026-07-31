@@ -1,7 +1,7 @@
 import { api } from "@/api/apollo"
 import { CREATE_TRANSACTION, type CreateTransactionInput } from "@/api/mutation/CreateTransaction"
 import { DELETE_TRANSACTION } from "@/api/mutation/DeleteTransaction"
-import { LIST_TRANSACTIONS } from "@/api/query/ListTransactions"
+import { LIST_TRANSACTIONS, type TransactionFilters } from "@/api/query/ListTransactions"
 import { UPDATE_TRANSACTION, type UpdateTransactionInput } from "@/api/mutation/UpdateTransaction"
 import type { Transaction } from "@/types"
 import { create } from "zustand"
@@ -10,7 +10,7 @@ interface TransactionState {
 	transactions: Transaction[]
 	isLoading: boolean
 	error: string | null
-	fetchTransactions: () => Promise<void>
+	fetchTransactions: (filters?: TransactionFilters) => Promise<void>
 	createTransaction: (input: CreateTransactionInput) => Promise<Transaction | null>
 	updateTransaction: (id: string, input: UpdateTransactionInput) => Promise<Transaction | null>
 	deleteTransaction: (id: string) => Promise<boolean>
@@ -22,11 +22,12 @@ export const useTransactionStore = create<TransactionState>((set) => ({
 	transactions: [],
 	isLoading: false,
 	error: null,
-	fetchTransactions: async () => {
+	fetchTransactions: async (filters) => {
 		try {
 			set({ isLoading: true, error: null })
 			const { data } = await api.query({
 				query: LIST_TRANSACTIONS,
+				variables: { filter: filters },
 			})
 
 			if (data?.listTransactions) {

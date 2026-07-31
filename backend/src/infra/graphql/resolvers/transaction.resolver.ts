@@ -17,6 +17,7 @@ import { PrismaCategoryRepository } from "~/application/ports/prisma-category.re
 import { isAuth } from "../middleware/auth.middleware";
 import type { GraphqlContext } from "../context";
 import { CreateTransactionInput } from "../inputs/create-transaction.input";
+import { ListTransactionsFilter } from "../inputs/list-transactions.input";
 import { UpdateTransactionInput } from "../inputs/update-transaction.input";
 import { CreateTransactionOutput } from "../outputs/create-transaction.output";
 import { DeleteTransactionOutput } from "../outputs/delete-transaction.output";
@@ -40,9 +41,15 @@ export class TransactionResolver {
 	@UseMiddleware(isAuth)
 	async listTransactions(
 		@Ctx() context: GraphqlContext,
+		@Arg("filter", () => ListTransactionsFilter, { nullable: true }) filter?: ListTransactionsFilter,
 	): Promise<ListTransactionsOutput> {
 		return this.listTransactionsUseCase.execute({
 			userId: context.user!,
+			description: filter?.description,
+			type: filter?.type,
+			categoryId: filter?.categoryId,
+			month: filter?.month,
+			year: filter?.year,
 		});
 	}
 
