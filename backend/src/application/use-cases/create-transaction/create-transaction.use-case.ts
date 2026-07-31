@@ -6,6 +6,7 @@ import { PrismaTransactionRepository } from "~/application/ports/prisma-transact
 import { InvalidTransactionAmountError } from "./errors/invalid-transaction-amount.error";
 import { InvalidTransactionCategoryError } from "./errors/invalid-transaction-category.error";
 import { InvalidTransactionDescriptionError } from "./errors/invalid-transaction-description.error";
+import { TransactionType } from "~/domain/transaction.model";
 
 @Service()
 export class CreateTransactionUseCase {
@@ -19,12 +20,13 @@ export class CreateTransactionUseCase {
 	): Promise<CreateTransactionUseCaseOutput> {
 		const normalizedDescription = input.description.trim();
 		const normalizedCategoryId = input.categoryId?.trim();
+		const amount = input.amount
 
 		if (!normalizedDescription) {
 			throw new InvalidTransactionDescriptionError();
 		}
 
-		if (input.amount <= 0) {
+		if (amount <= 0) {
 			throw new InvalidTransactionAmountError();
 		}
 
@@ -45,8 +47,9 @@ export class CreateTransactionUseCase {
 
 		const transaction = await this.transactionRepository.create({
 			...input,
+			amount: input.type === TransactionType.EXPENSE ? -Math.abs(amount) : amount,
 			description: normalizedDescription,
-			categoryId: normalizedCategoryId || undefined,
+			categoryId: normalizedCategoryId,
 		});
 
 		return {

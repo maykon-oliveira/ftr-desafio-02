@@ -34,6 +34,8 @@ export const CREATE_TRANSACTION: TypedDocumentNode<
 				category {
 					id
 					name
+					icon
+					color
 				}
 				occurredAt
 				createdAt

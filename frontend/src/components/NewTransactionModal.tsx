@@ -162,14 +162,16 @@ export function NewTransactionModal({
 								<ToggleGroupItem key={option.value}
 									value={option.value}
 									aria-label={option.value}
+									data-value={option.value}
+									data-pressed={option.value === formData.type}
 									className={cn(
-										option.value === "EXPENSE" ? "border-red-base" : "border-green-base",
-										option.value === formData.type ? "" : "border-0",
-										"flex-1"
+										"flex-1 group data-[pressed=false]:border-0",
+										"data-[value=EXPENSE]:border-red-base data-[value=INCOME]:border-green-base",
+										"data-[pressed=true]:text-gray-800 data-[pressed=false]:font-normal data-[pressed=false]:text-gray-600"
 									)}
 								>
 									<span className={cn(
-										option.value === "EXPENSE" ? "text-red-base" : "text-green-base",
+										"group-data-[pressed=true]:group-data-[value=EXPENSE]:text-red-base group-data-[pressed=true]:group-data-[value=INCOME]:text-green-base",
 									)}>
 										{option.icon}
 									</span>
@@ -221,6 +223,7 @@ export function NewTransactionModal({
 								id="transaction-amount"
 								placeholder="0.00"
 								type="number"
+								min={0}
 								step="0.01"
 								value={formData.amount}
 								onChange={(e) => setFormData({ ...formData, amount: e.target.value })}

@@ -3,10 +3,9 @@ import type { IconType } from "@/components/icon/type";
 import { NewTransactionModal } from "@/components/NewTransactionModal";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { colorsVariant, type ColorsType } from "@/lib/colors";
-import { TransactionTypeLabel } from "@/lib/transaction-type";
+import { transactionTypesOptions } from "@/lib/transaction-type";
 import { cn } from "@/lib/utils";
 import { useTransactionStore } from "@/store/transaction";
 import type { Transaction } from "@/types";
@@ -14,10 +13,12 @@ import { formatDate } from "date-fns";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+const formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" })
+
 export function Transaction() {
 	const [isModalOpen, setIsModalOpen] = useState(false)
-	const [selectedCategory, setSelectedCategory] = useState<Transaction | undefined>()
-	const { transactions, fetchTransactions } = useTransactionStore()
+	const [selectedTransaction, setSelectedTransaction] = useState<Transaction | undefined>()
+	const { transactions, isLoading, fetchTransactions, deleteTransaction } = useTransactionStore()
 
 	useEffect(() => {
 		fetchTransactions().catch(() => {
@@ -26,13 +27,27 @@ export function Transaction() {
 	}, [fetchTransactions])
 
 	const handleCreateNew = () => {
-		setSelectedCategory(undefined)
+		setSelectedTransaction(undefined)
 		setIsModalOpen(true)
 	}
 
 	const handleCloseModal = () => {
 		setIsModalOpen(false)
-		setSelectedCategory(undefined)
+		setSelectedTransaction(undefined)
+	}
+
+	const handleEdit = (transaction: Transaction) => {
+		setSelectedTransaction(transaction)
+		setIsModalOpen(true)
+	}
+
+	const handleDelete = async (id: string) => {
+		try {
+			await deleteTransaction(id)
+			toast.success("Transação removida com sucesso!")
+		} catch {
+			toast.error("Erro ao remover transação")
+		}
 	}
 
 	return <div className="space-y-6">
@@ -50,49 +65,74 @@ export function Transaction() {
 		<NewTransactionModal
 			isOpen={isModalOpen}
 			onOpenChange={handleCloseModal}
-			transaction={selectedCategory}
+			transaction={selectedTransaction}
 			onSuccess={() => { }}
 		/>
 
-		<Card>
-			<Table>
-				<TableHeader>
-					<TableRow className="uppercase">
-						<TableHead>Descrição</TableHead>
-						<TableHead>Data</TableHead>
-						<TableHead>Categoria</TableHead>
-						<TableHead>Tipo</TableHead>
-						<TableHead>Valor</TableHead>
-						<TableHead>Ações</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{transactions.map(transaction => {
-						const category = transaction.category;
-						const color = colorsVariant[category.color as ColorsType];
+		<Table className="bg-white rounded-md">
+			<TableHeader>
+				<TableRow className="uppercase hover:bg-white">
+					<TableHead className="text-gray-500">Descrição</TableHead>
+					<TableHead className="text-gray-500 text-center">Data</TableHead>
+					<TableHead className="text-gray-500 text-center">Categoria</TableHead>
+					<TableHead className="text-gray-500 text-center">Tipo</TableHead>
+					<TableHead className="text-gray-500 text-right">Valor</TableHead>
+					<TableHead className="text-gray-500 text-right">Ações</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{transactions.map(transaction => {
+					const category = transaction.category;
+					const color = colorsVariant[category.color as ColorsType];
+					const transactionType = transaction.type === 'EXPENSE' ? transactionTypesOptions[0] : transactionTypesOptions[1]
 
-						return (
-							<TableRow key={transaction.id}>
-								<TableCell className="flex items-center gap-2">
-									<div className={cn(buttonVariants({ size: "icon-lg" }), color.light, color.text)}>
-										<Icon iconName={category.icon as IconType} />
-									</div>
-									{transaction.description}
-								</TableCell>
-								<TableCell>{formatDate(transaction.occurredAt, "dd/MM/yyyy")}</TableCell>
-								<TableCell>
-									<Badge className={cn(color.light, color.text)}>
-										{category.name}
-									</Badge>
-								</TableCell>
-								<TableCell>{TransactionTypeLabel[transaction.type]}</TableCell>
-								<TableCell>{transaction.amount}</TableCell>
-								<TableCell>-</TableCell>
-							</TableRow>
-						)
-					})}
-				</TableBody>
-			</Table>
-		</Card>
+					return (
+						<TableRow className="hover:bg-white" key={transaction.id}>
+							<TableCell className="flex items-center gap-2">
+								<div className={cn(buttonVariants({ size: "icon-lg" }), color.light, color.text)}>
+									<Icon iconName={category.icon as IconType} />
+								</div>
+								<span className="text-gray-800 font-medium">{transaction.description}</span>
+							</TableCell>
+							<TableCell className="text-center text-gray-500">{formatDate(transaction.occurredAt, "dd/MM/yyyy")}</TableCell>
+							<TableCell className="text-center">
+								<Badge className={cn(color.light, color.text)}>
+									{category.name}
+								</Badge>
+							</TableCell>
+							<TableCell className="flex justify-center">
+								<div className={cn(
+									transaction.type === 'EXPENSE' ? "text-red-base" : "text-green-base",
+									"flex gap-2 items-center"
+								)}>
+									{transactionType.icon}
+									{transactionType.label}
+								</div>
+							</TableCell>
+							<TableCell className="text-right font-semibold text-gray-800">{formatter.format(transaction.amount)}</TableCell>
+							<TableCell>
+								<div className="flex gap-2 justify-end">
+									<Button
+										size="icon"
+										variant="outline"
+										onClick={() => handleDelete(transaction.id)}
+										disabled={isLoading}
+									>
+										<Icon iconName="trash" className="text-destructive" />
+									</Button>
+									<Button
+										size="icon"
+										variant="outline"
+										onClick={() => handleEdit(transaction)}
+									>
+										<Icon iconName="squarePen" />
+									</Button>
+								</div>
+							</TableCell>
+						</TableRow>
+					)
+				})}
+			</TableBody>
+		</Table>
 	</div>
 }
