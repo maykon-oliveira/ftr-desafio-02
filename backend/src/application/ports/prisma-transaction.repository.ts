@@ -172,4 +172,87 @@ export class PrismaTransactionRepository {
 			updatedAt: transaction.updatedAt,
 		} as TransactionModel;
 	}
+
+	async aggregateBalance(userId: string): Promise<number> {
+		const grouped = await prisma.transaction.groupBy({
+			by: ["type"],
+			where: { userId },
+			_sum: { amount: true },
+		});
+
+		const income = grouped.find((g) => g.type === "INCOME")?._sum.amount ?? 0;
+		const expense = grouped.find((g) => g.type === "EXPENSE")?._sum.amount ?? 0;
+
+		return income + expense; // expense is already negative
+	}
+
+	async aggregateByType(
+		userId: string,
+		type: string,
+		month: number,
+		year: number,
+	): Promise<number> {
+		const startDate = new Date(year, month - 1, 1);
+		const endDate = new Date(year, month, 1);
+
+		const result = await prisma.transaction.aggregate({
+			where: {
+				userId,
+				type: type as TransactionType | any,
+				occurredAt: { gte: startDate, lt: endDate },
+			},
+			_sum: { amount: true },
+		});
+
+		return result._sum.amount ?? 0;
+	}
+
+	async aggregateByCategory(
+		userId: string,
+	): Promise<Array<{ categoryId: string; total: number }>> {
+		const grouped = await prisma.transaction.groupBy({
+			by: ["categoryId"],
+			where: { userId },
+			_sum: { amount: true },
+		});
+
+		return grouped.map((g) => ({
+			categoryId: g.categoryId,
+			total: g._sum.amount ?? 0,
+		}));
+	}
+
+	async findLastByUserId(
+		userId: string,
+		limit: number,
+	): Promise<TransactionModel[]> {
+		const transactions = await prisma.transaction.findMany({
+			where: { userId },
+			orderBy: { occurredAt: "desc" },
+			take: limit,
+			select: {
+				id: true,
+				description: true,
+				amount: true,
+				type: true,
+				occurredAt: true,
+				userId: true,
+				categoryId: true,
+				createdAt: true,
+				updatedAt: true,
+			},
+		});
+
+		return transactions.map((transaction) => ({
+			id: transaction.id,
+			description: transaction.description,
+			amount: transaction.amount,
+			type: transaction.type as TransactionType,
+			occurredAt: transaction.occurredAt,
+			userId: transaction.userId,
+			categoryId: transaction.categoryId,
+			createdAt: transaction.createdAt,
+			updatedAt: transaction.updatedAt,
+		})) as TransactionModel[];
+	}
 }

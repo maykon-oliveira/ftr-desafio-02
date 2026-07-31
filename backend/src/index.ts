@@ -8,6 +8,7 @@ import { AuthResolver } from "./infra/graphql/resolvers/auth.resolver";
 import { UserResolver } from "./infra/graphql/resolvers/user.resolver";
 import { TransactionResolver } from "./infra/graphql/resolvers/transaction.resolver";
 import { CategoryResolver } from "./infra/graphql/resolvers/category.resolver";
+import { DashboardResolver } from "./infra/graphql/resolvers/dashboard.resolver";
 import { Container } from "typedi";
 import {
 	createGraphqlContext,
@@ -31,6 +32,7 @@ export const createApp = async () => {
 			UserResolver,
 			TransactionResolver,
 			CategoryResolver,
+			DashboardResolver,
 		],
 		validate: false,
 		emitSchemaFile: "./src/infra/schema/schema.graphql",

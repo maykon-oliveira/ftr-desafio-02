@@ -43,3 +43,20 @@ export interface Transaction {
 	updatedAt: string
 	userId: string
 }
+
+export interface CategoryTotal {
+	categoryId: string
+	categoryName: string
+	icon: string
+	color: string
+	total: number
+	transactionsCount: number
+}
+
+export interface DashboardData {
+	totalBalance: number
+	monthlyIncome: number
+	monthlyExpense: number
+	lastTransactions: Transaction[]
+	categoryTotals: CategoryTotal[]
+}
