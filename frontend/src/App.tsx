@@ -6,6 +6,7 @@ import { SignUp } from './pages/SignUp'
 import { Dashboard } from './pages/Dashboard'
 import { Transaction } from './pages/Transaction'
 import { Category } from './pages/Category'
+import { Profile } from './pages/Profile'
 import { DashboardLayout } from './components/DashboardLayout'
 import { Toaster } from './components/ui/sonner'
 
@@ -50,6 +51,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/transactions" element={<Transaction />} />
             <Route path="/categories" element={<Category />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </main>

@@ -1,5 +1,4 @@
 import logo from "@/assets/logo.svg"
-import { Avatar } from "./ui/avatar"
 import { NavLink } from "react-router-dom"
 import { useAuthStore } from "@/store/auth"
 
@@ -37,9 +36,9 @@ export function Navbar() {
 					</NavLink>
 				))}
 			</div>
-			<Avatar>
+			<NavLink to={"/profile"} className="bg-gray-300 rounded-full p-1">
 				{user?.name ? initials(user.name) : ""}
-			</Avatar>
+			</NavLink>
 		</div >
 	)
 }

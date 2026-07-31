@@ -1,4 +1,3 @@
-import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import type { TransactionType } from "@/types"
 import type { TransactionFilters } from "@/api/query/ListTransactions"
@@ -6,6 +5,8 @@ import { useCategoryStore } from "@/store/category"
 import { useEffect } from "react"
 import { Card, CardContent } from "./ui/card"
 import { Field, FieldLabel } from "./ui/field"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group"
+import { SearchIcon } from "lucide-react"
 
 const MONTH_NAMES = [
 	"Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -93,11 +94,16 @@ export function TransactionFilter({ filters, onFiltersChange }: TransactionFilte
 			<CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				<Field>
 					<FieldLabel>Buscar</FieldLabel>
-					<Input
-						placeholder="Buscar por descrição"
-						value={filters.description ?? ""}
-						onChange={(e) => handleDescriptionChange(e.target.value)}
-					/>
+					<InputGroup>
+						<InputGroupAddon>
+							<SearchIcon />
+						</InputGroupAddon>
+						<InputGroupInput
+							placeholder="Buscar por descrição"
+							value={filters.description ?? ""}
+							onChange={(e) => handleDescriptionChange(e.target.value)}
+						/>
+					</InputGroup>
 				</Field>
 
 				<Field>

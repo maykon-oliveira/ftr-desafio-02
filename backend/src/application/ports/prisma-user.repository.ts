@@ -1,6 +1,7 @@
 import type { UserModel } from "~/domain/user.model";
 import { prisma } from "~/infra/db/prisma";
 import type { RegisterUserUseCaseInput } from "../dtos/register-user.use-case.input";
+import type { UpdateUserUseCaseInput } from "../dtos/update-user.use-case.input";
 import { Service } from "typedi";
 
 @Service()
@@ -49,6 +50,24 @@ export class PrismaUserRepository {
 				name: input.name,
 				email: input.email,
 				password: input.password,
+			},
+		});
+
+		return {
+			id: user.id,
+			name: user.name,
+			email: user.email,
+			password: user.password,
+			createdAt: user.createdAt,
+			updatedAt: user.updatedAt,
+		};
+	}
+
+	async update(input: UpdateUserUseCaseInput): Promise<UserModel> {
+		const user = await prisma.user.update({
+			where: { id: input.id },
+			data: {
+				name: input.name.trim(),
 			},
 		});
 

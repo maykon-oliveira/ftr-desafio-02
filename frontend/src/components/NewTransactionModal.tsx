@@ -21,6 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover"
 import { Calendar } from "./ui/calendar"
 import { transactionTypesOptions } from "@/lib/transaction-type"
 import { formatDate } from "date-fns"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "./ui/input-group"
 
 interface NewTransactionModalProps {
 	isOpen: boolean
@@ -219,17 +220,22 @@ export function NewTransactionModal({
 
 						<Field>
 							<FieldLabel htmlFor="transaction-amount">Valor</FieldLabel>
-							<Input
-								id="transaction-amount"
-								placeholder="0.00"
-								type="number"
-								min={0}
-								step="0.01"
-								value={formData.amount}
-								onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-								disabled={isSubmitting}
-								required
-							/>
+							<InputGroup>
+								<InputGroupAddon>
+									R$
+								</InputGroupAddon>
+								<InputGroupInput
+									id="transaction-amount"
+									placeholder="0.00"
+									type="number"
+									min={0}
+									step="0.01"
+									value={formData.amount}
+									onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+									disabled={isSubmitting}
+									required
+								/>
+							</InputGroup>
 						</Field>
 					</div>
 
