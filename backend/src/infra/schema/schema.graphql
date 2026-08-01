@@ -76,11 +76,14 @@ input ListTransactionsFilter {
   categoryId: String
   description: String
   month: Int
+  page: Int = 1
+  pageSize: Int = 10
   type: TransactionType
   year: Int
 }
 
 type ListTransactionsOutput {
+  totalCount: Int!
   transactions: [TransactionModel!]!
 }
 

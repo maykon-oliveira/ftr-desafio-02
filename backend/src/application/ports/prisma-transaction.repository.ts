@@ -55,6 +55,8 @@ export class PrismaTransactionRepository {
 			categoryId?: string;
 			month?: number;
 			year?: number;
+			page?: number;
+			pageSize?: number;
 		},
 	): Promise<TransactionModel[]> {
 		const where: Record<string, unknown> = { userId };
@@ -80,11 +82,17 @@ export class PrismaTransactionRepository {
 			};
 		}
 
+		const page = filters?.page ?? 1;
+		const pageSize = filters?.pageSize ?? 10;
+		const skip = (page - 1) * pageSize;
+
 		const transactions = await prisma.transaction.findMany({
 			where,
 			orderBy: {
 				occurredAt: "desc",
 			},
+			skip,
+			take: pageSize,
 			select: {
 				id: true,
 				description: true,
@@ -109,6 +117,42 @@ export class PrismaTransactionRepository {
 			createdAt: transaction.createdAt,
 			updatedAt: transaction.updatedAt,
 		})) as TransactionModel[];
+	}
+
+	async countByUserId(
+		userId: string,
+		filters?: {
+			description?: string;
+			type?: string;
+			categoryId?: string;
+			month?: number;
+			year?: number;
+		},
+	): Promise<number> {
+		const where: Record<string, unknown> = { userId };
+
+		if (filters?.description) {
+			where.description = { contains: filters.description };
+		}
+
+		if (filters?.type) {
+			where.type = filters.type;
+		}
+
+		if (filters?.categoryId) {
+			where.categoryId = filters.categoryId;
+		}
+
+		if (filters?.month !== undefined && filters?.year !== undefined) {
+			const startDate = new Date(filters.year, filters.month - 1, 1);
+			const endDate = new Date(filters.year, filters.month, 1);
+			where.occurredAt = {
+				gte: startDate,
+				lt: endDate,
+			};
+		}
+
+		return prisma.transaction.count({ where });
 	}
 
 	async deleteByIdAndUserId(id: string, userId: string): Promise<boolean> {

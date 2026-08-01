@@ -10,6 +10,7 @@ interface TransactionState {
 	transactions: Transaction[]
 	isLoading: boolean
 	error: string | null
+	totalCount: number
 	fetchTransactions: (filters?: TransactionFilters) => Promise<void>
 	createTransaction: (input: CreateTransactionInput) => Promise<Transaction | null>
 	updateTransaction: (id: string, input: UpdateTransactionInput) => Promise<Transaction | null>
@@ -22,6 +23,7 @@ export const useTransactionStore = create<TransactionState>((set) => ({
 	transactions: [],
 	isLoading: false,
 	error: null,
+	totalCount: 0,
 	fetchTransactions: async (filters) => {
 		try {
 			set({ isLoading: true, error: null })
@@ -31,7 +33,11 @@ export const useTransactionStore = create<TransactionState>((set) => ({
 			})
 
 			if (data?.listTransactions) {
-				set({ transactions: data.listTransactions.transactions, isLoading: false })
+				set({
+					transactions: data.listTransactions.transactions,
+					totalCount: data.listTransactions.totalCount,
+					isLoading: false,
+				})
 				return
 			}
 

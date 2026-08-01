@@ -8,11 +8,14 @@ export interface TransactionFilters {
 	categoryId?: string
 	month?: number
 	year?: number
+	page?: number
+	pageSize?: number
 }
 
 type ListTransactionsQuery = {
 	listTransactions: {
 		transactions: Transaction[]
+		totalCount: number
 	}
 }
 
@@ -39,6 +42,7 @@ export const LIST_TRANSACTIONS: TypedDocumentNode<ListTransactionsQuery, ListTra
 				updatedAt
 				userId
 			}
+			totalCount
 		}
 	}
 `

@@ -50,6 +50,8 @@ export class TransactionResolver {
 			categoryId: filter?.categoryId,
 			month: filter?.month,
 			year: filter?.year,
+			page: filter?.page,
+			pageSize: filter?.pageSize,
 		});
 	}
 

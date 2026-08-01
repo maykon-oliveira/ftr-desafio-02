@@ -19,11 +19,13 @@ describe("ListTransactionsUseCase", () => {
 		];
 		const repository = {
 			findManyByUserId: mock(async () => transactions),
+			countByUserId: mock(async () => transactions.length),
 		} as unknown as PrismaTransactionRepository;
 
 		const useCase = new ListTransactionsUseCase(repository);
 		const result = await useCase.execute({ userId: "user-1" });
 
 		expect(result.transactions).toEqual(transactions);
+		expect(result.totalCount).toBe(transactions.length);
 	});
 });

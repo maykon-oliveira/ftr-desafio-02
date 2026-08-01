@@ -4,7 +4,7 @@ import { NewTransactionModal } from "@/components/NewTransactionModal";
 import { TransactionFilter } from "@/components/TransactionFilter";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { colorsVariant, type ColorsType } from "@/lib/colors";
 import { transactionTypesOptions } from "@/lib/transaction-type";
 import { cn } from "@/lib/utils";
@@ -14,6 +14,7 @@ import type { TransactionFilters } from "@/api/query/ListTransactions";
 import { formatDate } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { TransactionTablePagination } from "@/components/TransactionTablePagination";
 
 const formatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" })
 
@@ -21,7 +22,9 @@ export function Transaction() {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const [selectedTransaction, setSelectedTransaction] = useState<Transaction | undefined>()
 	const [filters, setFilters] = useState<TransactionFilters>({})
-	const { transactions, isLoading, fetchTransactions, deleteTransaction } = useTransactionStore()
+	const [page, setPage] = useState(1)
+	const { transactions, isLoading, totalCount, fetchTransactions, deleteTransaction } = useTransactionStore()
+	const pageSize = 10
 
 	const loadTransactions = useCallback(() => {
 		// Only include non-empty values in the filter
@@ -34,10 +37,13 @@ export function Transaction() {
 			cleanedFilters.year = filters.year
 		}
 
+		cleanedFilters.page = page
+		cleanedFilters.pageSize = pageSize
+
 		fetchTransactions(Object.keys(cleanedFilters).length > 0 ? cleanedFilters : undefined).catch(() => {
 			toast.error("Erro ao carregar transações")
 		})
-	}, [fetchTransactions, filters])
+	}, [fetchTransactions, filters, page])
 
 	useEffect(() => {
 		loadTransactions()
@@ -75,6 +81,11 @@ export function Transaction() {
 		}
 	}
 
+	const handleFiltersChange = (newFilters: TransactionFilters) => {
+		setFilters(newFilters)
+		setPage(1)
+	}
+
 	return <div className="space-y-6">
 		<div className="flex items-center justify-between">
 			<div>
@@ -94,7 +105,7 @@ export function Transaction() {
 			onSuccess={() => { }}
 		/>
 
-		<TransactionFilter filters={filters} onFiltersChange={setFilters} />
+		<TransactionFilter filters={filters} onFiltersChange={handleFiltersChange} />
 
 		<Table className="bg-white rounded-md">
 			<TableHeader>
@@ -160,6 +171,16 @@ export function Transaction() {
 					)
 				})}
 			</TableBody>
+
+			{totalCount > pageSize && (
+				<TableFooter >
+					<TableRow className="hover:bg-white bg-white">
+						<TableCell colSpan={6}>
+							<TransactionTablePagination page={page} totalCount={totalCount} onPageChange={setPage} pageSize={pageSize} />
+						</TableCell>
+					</TableRow>
+				</TableFooter>
+			)}
 		</Table>
 	</div>
 }

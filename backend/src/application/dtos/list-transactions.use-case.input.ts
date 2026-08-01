@@ -7,4 +7,6 @@ export interface ListTransactionsUseCaseInput {
 	categoryId?: string;
 	month?: number;
 	year?: number;
+	page?: number;
+	pageSize?: number;
 }

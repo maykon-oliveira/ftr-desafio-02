@@ -17,4 +17,10 @@ export class ListTransactionsFilter {
 
 	@Field(() => Int, { nullable: true })
 	year?: number;
+
+	@Field(() => Int, { nullable: true, defaultValue: 1 })
+	page?: number;
+
+	@Field(() => Int, { nullable: true, defaultValue: 10 })
+	pageSize?: number;
 }
